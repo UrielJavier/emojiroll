@@ -36,11 +36,11 @@ export function contrastRatio(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05)
 }
 
-function contrastBand(r: number): { cls: ContrastLevel; msg: string } {
-  if (r >= 4.5) return { cls: 'ok', msg: 'Buen contraste, se lee bien a tamaño emoji.' }
-  if (r >= 3) return { cls: 'mid', msg: 'Aceptable para texto grande; a tamaño emoji puede quedar justo.' }
-  if (r >= 2) return { cls: 'low', msg: 'Contraste bajo: costará leerse en pequeño.' }
-  return { cls: 'bad', msg: 'Contraste muy bajo: casi ilegible. Cambia un color.' }
+function contrastBand(r: number): ContrastLevel {
+  if (r >= 4.5) return 'ok'
+  if (r >= 3) return 'mid'
+  if (r >= 2) return 'low'
+  return 'bad'
 }
 
 function worstPair(textCols: string[], bgCols: string[]): number {
@@ -56,8 +56,8 @@ export interface ContrastResult {
   msg: string
 }
 
-/** Worst-case contrast between a layer's text and the background, plus guidance. */
-export function computeContrast(layer: TextLayer, s: EmojiState): ContrastResult {
+/** Worst-case contrast between a layer's text and the background, plus localized guidance. */
+export function computeContrast(layer: TextLayer, s: EmojiState, t: (key: string) => string): ContrastResult {
   const textTransparent = layer.fillType === 'transparent'
   const bgTransparent = s.bgType === 'transparent'
   const textColors =
@@ -65,36 +65,34 @@ export function computeContrast(layer: TextLayer, s: EmojiState): ContrastResult
   const bgColors =
     s.bgType === 'gradient' && s.bgGradStops.length ? s.bgGradStops.map((x) => x.color) : [s.bg]
 
+  const themeNote = (prefix: string, light: number, dark: number) =>
+    `${prefix} ${t('contrast.light')} ${light.toFixed(1)}:1 · ${t('contrast.dark')} ${dark.toFixed(1)}:1. `
+
   if (textTransparent && bgTransparent) {
-    return {
-      level: 'bad',
-      ratioText: '—',
-      fillPct: 0,
-      msg: 'Texto y fondo transparentes: el emoji quedaría invisible. Pon un fondo sólido o degradado.',
-    }
+    return { level: 'bad', ratioText: '—', fillPct: 0, msg: t('contrast.both') }
   }
 
   let r: number
   let note = ''
   if (textTransparent) {
     // the visible 'ink' is the background; the letters are holes onto the chat theme
-    const rcl = worstPair(bgColors, ['#ffffff']) // tema claro
-    const rcd = worstPair(bgColors, ['#1a1d21']) // tema oscuro
+    const rcl = worstPair(bgColors, ['#ffffff']) // light theme
+    const rcd = worstPair(bgColors, ['#1a1d21']) // dark theme
     r = Math.min(rcl, rcd)
-    note = `Texto calado (se ve el chat). Claro ${rcl.toFixed(1)}:1 · Oscuro ${rcd.toFixed(1)}:1. `
+    note = themeNote(t('contrast.knockout'), rcl, rcd)
   } else if (bgTransparent) {
     const rl = worstPair(textColors, ['#ffffff'])
     const rd = worstPair(textColors, ['#1a1d21'])
     r = Math.min(rl, rd)
-    note = `Transparente: depende del tema. Claro ${rl.toFixed(1)}:1 · Oscuro ${rd.toFixed(1)}:1. `
+    note = themeNote(t('contrast.transparent'), rl, rd)
   } else {
     r = worstPair(textColors, bgColors)
-    if (s.bgType === 'gradient') note = 'Fondo degradado. '
+    if (s.bgType === 'gradient') note = t('contrast.bgGradient') + ' '
   }
-  if (layer.fillType === 'gradient') note = 'Texto degradado (peor parada). ' + note
+  if (layer.fillType === 'gradient') note = t('contrast.textGradient') + ' ' + note
 
-  const band = contrastBand(r)
+  const cls = contrastBand(r)
   const fillPct = Math.max(0, Math.min(100, ((r - 1) / 6) * 100))
-  const extra = !layer.stroke && (band.cls === 'low' || band.cls === 'bad') ? ' Prueba activar el contorno.' : ''
-  return { level: band.cls, ratioText: `${r.toFixed(1)}:1`, fillPct, msg: note + band.msg + extra }
+  const extra = !layer.stroke && (cls === 'low' || cls === 'bad') ? ' ' + t('contrast.tryStroke') : ''
+  return { level: cls, ratioText: `${r.toFixed(1)}:1`, fillPct, msg: note + t(`contrast.${cls}`) + extra }
 }

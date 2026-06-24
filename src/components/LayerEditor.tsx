@@ -34,7 +34,7 @@ export function LayerEditor(props: Props) {
   const [tab, setTab] = useState<Tab>('texto')
   return (
     <div className="panel">
-      <div className="tabs" role="tablist" aria-label="Editar capa activa">
+      <div className="tabs" role="tablist" aria-label={t('editor.aria')}>
         {TABS.map((tabDef) => (
           <button
             key={tabDef.id}

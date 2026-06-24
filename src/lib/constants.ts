@@ -63,22 +63,22 @@ export const GRAD_PRESET_OPTIONS = [
   { key: 'gold', label: 'Oro' },
 ]
 
-/** 3×3 direction pad; null marks the inert centre cell. */
+/** 3×3 direction pad; null marks the inert centre cell. `key` is an i18n key. */
 export interface DirCell {
   angle: number
   arrow: string
-  label: string
+  key: string
 }
 export const DIR_CELLS: (DirCell | null)[] = [
-  { angle: 225, arrow: '↖', label: 'arriba-izquierda' },
-  { angle: 270, arrow: '↑', label: 'arriba' },
-  { angle: 315, arrow: '↗', label: 'arriba-derecha' },
-  { angle: 180, arrow: '←', label: 'izquierda' },
+  { angle: 225, arrow: '↖', key: 'dir.tl' },
+  { angle: 270, arrow: '↑', key: 'dir.t' },
+  { angle: 315, arrow: '↗', key: 'dir.tr' },
+  { angle: 180, arrow: '←', key: 'dir.l' },
   null,
-  { angle: 0, arrow: '→', label: 'derecha' },
-  { angle: 135, arrow: '↙', label: 'abajo-izquierda' },
-  { angle: 90, arrow: '↓', label: 'abajo' },
-  { angle: 45, arrow: '↘', label: 'abajo-derecha' },
+  { angle: 0, arrow: '→', key: 'dir.r' },
+  { angle: 135, arrow: '↙', key: 'dir.bl' },
+  { angle: 90, arrow: '↓', key: 'dir.b' },
+  { angle: 45, arrow: '↘', key: 'dir.br' },
 ]
 
 export const SMOOTH_LABELS: Record<number, string> = { 12: 'Compacto', 18: 'Estándar', 25: 'Suave' }

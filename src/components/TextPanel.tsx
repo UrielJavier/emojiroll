@@ -1,5 +1,6 @@
 import { FontCombo } from './FontCombo'
 import { RangeField } from './RangeField'
+import { useI18n } from '../i18n'
 import type { FontKey, TextLayer } from '../lib/types'
 
 interface Props {
@@ -23,11 +24,12 @@ export function TextPanel({
   ensureFontKey,
   ensureAllFonts,
 }: Props) {
+  const { t } = useI18n()
   return (
     <>
       <div className="group">
         <label className="field-label" htmlFor="text">
-          Texto de la capa
+          {t('text.layerText')}
         </label>
         <input
           type="text"
@@ -37,12 +39,12 @@ export function TextPanel({
           autoComplete="off"
           onChange={(e) => onTextChange(e.target.value)}
         />
-        <p className="hint">Palabras cortas se leen mejor a tamaño emoji.</p>
+        <p className="hint">{t('text.shortHint')}</p>
       </div>
 
       <div className="group">
         <label className="field-label">
-          Tipografía <span className="val">pasa el ratón para previsualizar</span>
+          {t('text.font')} <span className="val">{t('text.fontHint')}</span>
         </label>
         <FontCombo
           value={layer.font}
@@ -55,7 +57,7 @@ export function TextPanel({
 
       <RangeField
         id="size"
-        label="Tamaño de letra"
+        label={t('text.size')}
         valueText={`${layer.size} px`}
         min={24}
         max={92}
@@ -64,7 +66,7 @@ export function TextPanel({
       />
       <RangeField
         id="track"
-        label="Espaciado entre letras"
+        label={t('text.tracking')}
         valueText={`${layer.track} px`}
         min={0}
         max={24}
@@ -73,7 +75,7 @@ export function TextPanel({
       />
       <RangeField
         id="angle"
-        label="Ángulo (diagonal)"
+        label={t('text.angle')}
         valueText={`${layer.angle}°`}
         min={-45}
         max={45}
@@ -83,20 +85,21 @@ export function TextPanel({
       />
       <RangeField
         id="offsetY"
-        label="Posición vertical"
+        label={t('text.offsetY')}
         valueText={`${layer.offsetY > 0 ? '+' : ''}${layer.offsetY} px`}
         min={-48}
         max={48}
         value={layer.offsetY}
         onChange={(v) => setLayer({ offsetY: v })}
-        hint="Sube o baja esta capa para apilar varias palabras."
+        hint={t('text.offsetYHint')}
       >
         <label className="chk" style={{ marginTop: 6 }}>
-          <input type="checkbox" checked={layer.bold} onChange={(e) => setLayer({ bold: e.target.checked })} /> Negrita
+          <input type="checkbox" checked={layer.bold} onChange={(e) => setLayer({ bold: e.target.checked })} />{' '}
+          {t('text.bold')}
         </label>
         <label className="chk" style={{ marginTop: 6 }}>
-          <input type="checkbox" checked={showGuide} onChange={(e) => onShowGuide(e.target.checked)} /> Ver guía en la
-          vista previa
+          <input type="checkbox" checked={showGuide} onChange={(e) => onShowGuide(e.target.checked)} />{' '}
+          {t('text.guide')}
         </label>
       </RangeField>
     </>

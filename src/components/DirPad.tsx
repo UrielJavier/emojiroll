@@ -1,4 +1,5 @@
 import { DIR_CELLS } from '../lib/constants'
+import { useI18n } from '../i18n'
 
 interface Props {
   value: number
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export function DirPad({ value, onChange, ariaLabel }: Props) {
+  const { t } = useI18n()
   return (
     <div className="dirpad" role="group" aria-label={ariaLabel}>
       {DIR_CELLS.map((cell, i) =>
@@ -19,7 +21,7 @@ export function DirPad({ value, onChange, ariaLabel }: Props) {
             key={i}
             type="button"
             aria-pressed={cell.angle === value}
-            aria-label={cell.label}
+            aria-label={t(cell.key)}
             onClick={() => onChange(cell.angle)}
           >
             {cell.arrow}

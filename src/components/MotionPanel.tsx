@@ -1,15 +1,10 @@
 import { Segmented } from './Segmented'
 import { RangeField } from './RangeField'
-import { SMOOTH_LABELS, SMOOTH_OPTIONS } from '../lib/constants'
+import { SMOOTH_OPTIONS } from '../lib/constants'
 import { framesFor } from '../lib/encode'
 import { anyMoving } from '../lib/draw'
+import { useI18n } from '../i18n'
 import type { EmojiState, Mode, TextLayer } from '../lib/types'
-
-const MODE_OPTIONS: { value: Mode; label: string }[] = [
-  { value: 'left', label: '← Izquierda' },
-  { value: 'right', label: 'Derecha →' },
-  { value: 'static', label: 'Fijo' },
-]
 
 interface Props {
   layer: TextLayer
@@ -19,20 +14,32 @@ interface Props {
 }
 
 export function MotionPanel({ layer, setLayer, state, setGlobal }: Props) {
+  const { t } = useI18n()
   const isStatic = layer.mode === 'static'
   const moving = anyMoving(state)
-  const framesHint = moving ? `≈ ${framesFor(state.secPerLoop, state.fps)} frames` : '1 frame (todo fijo)'
+  const framesHint = moving ? `≈ ${framesFor(state.secPerLoop, state.fps)} frames` : t('motion.framesStatic')
+
+  const modeOptions: { value: Mode; label: string }[] = [
+    { value: 'left', label: t('motion.mode.left') },
+    { value: 'right', label: t('motion.mode.right') },
+    { value: 'static', label: t('motion.mode.static') },
+  ]
 
   return (
     <>
       <div className="group">
-        <label className="field-label">Movimiento de la capa</label>
-        <Segmented options={MODE_OPTIONS} value={layer.mode} onChange={(m) => setLayer({ mode: m })} ariaLabel="Movimiento" />
+        <label className="field-label">{t('motion.title')}</label>
+        <Segmented
+          options={modeOptions}
+          value={layer.mode}
+          onChange={(m) => setLayer({ mode: m })}
+          ariaLabel={t('motion.modeAria')}
+        />
       </div>
 
       <RangeField
         id="speed"
-        label="Velocidad relativa"
+        label={t('motion.speed')}
         valueText={`${layer.speed}×`}
         min={1}
         max={6}
@@ -40,12 +47,12 @@ export function MotionPanel({ layer, setLayer, state, setGlobal }: Props) {
         value={layer.speed}
         disabled={isStatic}
         onChange={(v) => setLayer({ speed: v })}
-        hint="Capas con velocidades distintas crean el efecto parallax."
+        hint={t('motion.speedHint')}
       />
 
       <RangeField
         id="gap"
-        label="Separación entre repeticiones"
+        label={t('motion.gap')}
         valueText={`${layer.gap} px`}
         min={0}
         max={256}
@@ -55,10 +62,10 @@ export function MotionPanel({ layer, setLayer, state, setGlobal }: Props) {
       />
 
       <div className="subsection">
-        <span className="subhead">Bucle y salida (global)</span>
+        <span className="subhead">{t('motion.global')}</span>
         <RangeField
           id="secloop"
-          label="Duración del bucle"
+          label={t('motion.loop')}
           valueText={`${state.secPerLoop.toFixed(1)} s`}
           min={1.5}
           max={10}
@@ -70,25 +77,25 @@ export function MotionPanel({ layer, setLayer, state, setGlobal }: Props) {
         />
         <div className="group">
           <label className="field-label" htmlFor="smooth">
-            Suavidad <span className="val">{SMOOTH_LABELS[state.fps] ?? 'Estándar'}</span>
+            {t('motion.smooth')} <span className="val">{t(`smooth.label.${state.fps}`)}</span>
           </label>
           <select id="smooth" value={state.fps} disabled={!moving} onChange={(e) => setGlobal({ fps: +e.target.value })}>
             {SMOOTH_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
-                {o.label}
+                {t(`smooth.opt.${o.value}`)}
               </option>
             ))}
           </select>
         </div>
         <RangeField
           id="pad"
-          label="Margen"
+          label={t('motion.margin')}
           valueText={`${state.padding} px`}
           min={0}
           max={28}
           value={state.padding}
           onChange={(v) => setGlobal({ padding: v })}
-          hint="Aire alrededor del texto. Si hace falta, la letra se reduce sola para no tocar el borde."
+          hint={t('motion.marginHint')}
         />
       </div>
     </>

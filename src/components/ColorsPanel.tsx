@@ -6,19 +6,9 @@ import { RangeField } from './RangeField'
 import { DirPad } from './DirPad'
 import { SWATCHES } from '../lib/constants'
 import { contrastFor } from '../lib/color'
+import { useI18n } from '../i18n'
 import type { ContrastResult } from '../lib/color'
 import type { BgType, EmojiState, FillType, TextLayer } from '../lib/types'
-
-const BG_OPTIONS: { value: BgType; label: string }[] = [
-  { value: 'solid', label: 'Sólido' },
-  { value: 'gradient', label: 'Degradado' },
-  { value: 'transparent', label: 'Transparente' },
-]
-const FILL_OPTIONS: { value: FillType; label: string }[] = [
-  { value: 'solid', label: 'Sólido' },
-  { value: 'gradient', label: 'Degradado' },
-  { value: 'transparent', label: 'Transparente' },
-]
 
 interface Props {
   layer: TextLayer
@@ -30,6 +20,13 @@ interface Props {
 }
 
 export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contrast }: Props) {
+  const { t } = useI18n()
+  const typeOptions = [
+    { value: 'solid', label: t('color.type.solid') },
+    { value: 'gradient', label: t('color.type.gradient') },
+    { value: 'transparent', label: t('color.type.transparent') },
+  ]
+
   const onSwatch = (hex: string) => {
     setGlobal({ bg: hex, bgType: 'solid', transparent: false })
     setLayer({ fg: contrastFor(hex) })
@@ -40,28 +37,23 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
       {/* FONDO (global) */}
       <div className="subsection">
         <div className="subhead-row">
-          <span className="subhead">Fondo</span>
-          <button
-            className="swap-corner"
-            title="Intercambiar fondo y color de la capa activa"
-            aria-label="Intercambiar fondo y color de la capa activa"
-            onClick={onSwap}
-          >
+          <span className="subhead">{t('color.bg')}</span>
+          <button className="swap-corner" title={t('color.swapTitle')} aria-label={t('color.swapTitle')} onClick={onSwap}>
             ⇅
           </button>
         </div>
         <Segmented
-          options={BG_OPTIONS}
+          options={typeOptions as { value: BgType; label: string }[]}
           value={state.bgType}
-          onChange={(t) => setGlobal({ bgType: t, transparent: t === 'transparent' })}
-          ariaLabel="Tipo de fondo"
+          onChange={(v) => setGlobal({ bgType: v, transparent: v === 'transparent' })}
+          ariaLabel={t('color.bgTypeAria')}
         />
         {state.bgType === 'solid' && (
           <div style={{ marginTop: 12 }}>
             <div className="solid-row">
-              <ColorField id="bg" label="Color" value={state.bg} onChange={(v) => setGlobal({ bg: v })} />
+              <ColorField id="bg" label={t('color.color')} value={state.bg} onChange={(v) => setGlobal({ bg: v })} />
             </div>
-            <div className="swatches" aria-label="Fondos rápidos">
+            <div className="swatches" aria-label={t('color.quickBg')}>
               {SWATCHES.map((hex) => (
                 <button
                   key={hex}
@@ -69,7 +61,7 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
                   className="swatch"
                   style={{ background: hex }}
                   title={hex}
-                  aria-label={`Fondo ${hex}`}
+                  aria-label={`${t('color.bg')} ${hex}`}
                   onClick={() => onSwatch(hex)}
                 />
               ))}
@@ -83,31 +75,26 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
               onStopsChange={(s) => setGlobal({ bgGradStops: s })}
               angle={state.bgGradAngle}
               onAngleChange={(a) => setGlobal({ bgGradAngle: a })}
-              dirLabel="Dirección del degradado de fondo"
+              dirLabel={t('color.bgGradDirAria')}
             />
           </div>
         )}
-        {state.bgType === 'transparent' && (
-          <p className="hint">
-            Sin fondo. La legibilidad dependerá del tema (claro u oscuro) de quien lo vea — compruébalo con el conmutador
-            del mensaje y el medidor de contraste.
-          </p>
-        )}
+        {state.bgType === 'transparent' && <p className="hint">{t('color.bgTransparentHint')}</p>}
       </div>
 
       {/* TEXTO (capa activa) */}
       <div className="subsection">
-        <span className="subhead">Texto de la capa</span>
+        <span className="subhead">{t('color.layerText')}</span>
         <Segmented
-          options={FILL_OPTIONS}
+          options={typeOptions as { value: FillType; label: string }[]}
           value={layer.fillType}
-          onChange={(t) => setLayer({ fillType: t })}
-          ariaLabel="Tipo de relleno"
+          onChange={(v) => setLayer({ fillType: v })}
+          ariaLabel={t('color.fillTypeAria')}
         />
         {layer.fillType === 'solid' && (
           <div style={{ marginTop: 12 }}>
             <div className="solid-row">
-              <ColorField id="fg" label="Color" value={layer.fg} onChange={(v) => setLayer({ fg: v })} />
+              <ColorField id="fg" label={t('color.color')} value={layer.fg} onChange={(v) => setLayer({ fg: v })} />
             </div>
           </div>
         )}
@@ -118,27 +105,24 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
               onStopsChange={(s) => setLayer({ gradStops: s })}
               angle={layer.gradAngle}
               onAngleChange={(a) => setLayer({ gradAngle: a })}
-              dirLabel="Dirección del degradado"
+              dirLabel={t('color.textGradDirAria')}
             />
           </div>
         )}
-        {layer.fillType === 'transparent' && (
-          <p className="hint">
-            Texto calado: se ve a través de las letras (efecto recorte). Necesita un fondo sólido o degradado para
-            notarse.
-          </p>
-        )}
+        {layer.fillType === 'transparent' && <p className="hint">{t('color.textTransparentHint')}</p>}
       </div>
 
       {/* ESTILOS (capa activa) */}
       <div className="subsection">
-        <span className="subhead">Estilos</span>
+        <span className="subhead">{t('color.styles')}</span>
         <div className="toggle-row">
           <label className="chk">
-            <input type="checkbox" checked={layer.shadow} onChange={(e) => setLayer({ shadow: e.target.checked })} /> Sombra
+            <input type="checkbox" checked={layer.shadow} onChange={(e) => setLayer({ shadow: e.target.checked })} />{' '}
+            {t('color.shadow')}
           </label>
           <label className="chk">
-            <input type="checkbox" checked={layer.stroke} onChange={(e) => setLayer({ stroke: e.target.checked })} /> Contorno
+            <input type="checkbox" checked={layer.stroke} onChange={(e) => setLayer({ stroke: e.target.checked })} />{' '}
+            {t('color.stroke')}
           </label>
         </div>
 
@@ -148,14 +132,14 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1, minWidth: 150 }}>
                 <ColorField
                   id="shadowColor"
-                  label="Color de sombra"
+                  label={t('color.shadowColor')}
                   value={layer.shadowColor}
                   onChange={(v) => setLayer({ shadowColor: v })}
                   maxWidth={200}
                 />
                 <RangeField
                   id="shadowDist"
-                  label={<span style={{ textTransform: 'none', fontWeight: 500 }}>Distancia</span>}
+                  label={<span style={{ textTransform: 'none', fontWeight: 500 }}>{t('color.distance')}</span>}
                   valueText={`${layer.shadowDist} px`}
                   min={0}
                   max={14}
@@ -168,12 +152,12 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
                   className="field-label"
                   style={{ textTransform: 'none', fontWeight: 500, display: 'block', marginBottom: 7 }}
                 >
-                  Dirección
+                  {t('color.direction')}
                 </span>
                 <DirPad
                   value={layer.shadowAngle}
                   onChange={(a) => setLayer({ shadowAngle: a })}
-                  ariaLabel="Dirección de la sombra"
+                  ariaLabel={t('color.shadowDirAria')}
                 />
               </div>
             </div>
@@ -185,7 +169,7 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
             <div style={{ display: 'flex', gap: 14, alignItems: 'flex-end', flexWrap: 'wrap' }}>
               <ColorField
                 id="strokeColor"
-                label="Color de contorno"
+                label={t('color.strokeColor')}
                 value={layer.strokeColor}
                 onChange={(v) => setLayer({ strokeColor: v })}
                 maxWidth={170}
@@ -193,7 +177,7 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
               <div style={{ flex: 1, minWidth: 120 }}>
                 <RangeField
                   id="strokeW"
-                  label={<span style={{ textTransform: 'none', fontWeight: 500 }}>Grosor</span>}
+                  label={<span style={{ textTransform: 'none', fontWeight: 500 }}>{t('color.thickness')}</span>}
                   valueText={`${layer.strokeWidth} px`}
                   min={1}
                   max={8}

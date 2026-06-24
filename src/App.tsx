@@ -60,7 +60,7 @@ export default function App() {
     return () => clearTimeout(id)
   }, [state])
 
-  const contrast = computeContrast(active, state)
+  const contrast = computeContrast(active, state, t)
 
   const onTextChange = (value: string) => {
     dispatch({ type: 'patchLayer', id: state.activeLayerId, patch: { text: value } })

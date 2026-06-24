@@ -1,4 +1,5 @@
 import { GRAD_PRESETS, GRAD_PRESET_OPTIONS } from '../lib/constants'
+import { useI18n } from '../i18n'
 import type { GradStop } from '../lib/types'
 import { DirPad } from './DirPad'
 
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export function GradientEditor({ stops, onStopsChange, angle, onAngleChange, dirLabel }: Props) {
+  const { t } = useI18n()
   const setStop = (i: number, patch: Partial<GradStop>) =>
     onStopsChange(stops.map((s, idx) => (idx === i ? { ...s, ...patch } : s)))
   const removeStop = (i: number) => onStopsChange(stops.filter((_, idx) => idx !== i))
@@ -54,7 +56,7 @@ export function GradientEditor({ stops, onStopsChange, angle, onAngleChange, dir
                 <button
                   type="button"
                   className="stop-del"
-                  title="Quitar parada"
+                  title={t('grad.removeStop')}
                   disabled={stops.length <= 2}
                   onClick={() => removeStop(i)}
                 >
@@ -64,7 +66,7 @@ export function GradientEditor({ stops, onStopsChange, angle, onAngleChange, dir
             ))}
           </div>
           <button type="button" className="add-stop" disabled={stops.length >= 6} onClick={addStop}>
-            + Añadir parada
+            {t('grad.addStop')}
           </button>
         </div>
         <div className="grad-dir-col">
@@ -72,7 +74,7 @@ export function GradientEditor({ stops, onStopsChange, angle, onAngleChange, dir
             className="field-label"
             style={{ textTransform: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', height: 18, marginBottom: 12 }}
           >
-            Dirección
+            {t('color.direction')}
           </span>
           <DirPad value={angle} onChange={onAngleChange} ariaLabel={dirLabel} />
         </div>
@@ -80,7 +82,7 @@ export function GradientEditor({ stops, onStopsChange, angle, onAngleChange, dir
       <div className="grad-presets">
         {GRAD_PRESET_OPTIONS.map((p) => (
           <button key={p.key} type="button" onClick={() => applyPreset(p.key)}>
-            {p.label}
+            {t(`grad.${p.key}`)}
           </button>
         ))}
       </div>

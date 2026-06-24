@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import type { ChangeEvent, KeyboardEvent } from 'react'
+import { useI18n } from '../i18n'
 import type { StylePreset } from '../lib/types'
 
 type PresetMap = Record<string, StylePreset>
@@ -29,6 +30,7 @@ interface Props {
 }
 
 export function PresetsPanel({ presets, canPersist, onSave, onApply, onDelete, onImport }: Props) {
+  const { t } = useI18n()
   const [name, setName] = useState('')
   const [ioMsg, setIoMsg] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -65,22 +67,22 @@ export function PresetsPanel({ presets, canPersist, onSave, onApply, onDelete, o
       const count = Object.keys(clean).length
       if (!count) throw new Error('vacío')
       onImport(clean)
-      setIoMsg(`Importados ${count} estilo${count === 1 ? '' : 's'}.`)
+      setIoMsg(`${t('presets.imported')} ${count} ${count === 1 ? t('presets.styleOne') : t('presets.styleMany')}.`)
     } catch {
-      setIoMsg('No se pudo leer el archivo: no es un JSON de presets válido.')
+      setIoMsg(t('presets.importError'))
     }
   }
 
   return (
     <div className="panel">
       <div className="subhead" style={{ marginBottom: 12 }}>
-        Mis presets
+        {t('presets.title')}
       </div>
       <div className="preset-save">
         <input
           type="text"
           id="presetName"
-          placeholder="Nombre del estilo"
+          placeholder={t('presets.namePlaceholder')}
           autoComplete="off"
           maxLength={40}
           value={name}
@@ -93,31 +95,29 @@ export function PresetsPanel({ presets, canPersist, onSave, onApply, onDelete, o
           }}
         />
         <button type="button" className="preset-save-btn" onClick={save}>
-          Guardar estilo
+          {t('presets.save')}
         </button>
       </div>
       <p className="hint" style={{ marginTop: 8 }}>
-        {canPersist
-          ? 'Se guardan en este navegador y siguen disponibles al recargar.'
-          : 'Se guardan solo durante esta sesión (este entorno no permite almacenamiento permanente).'}
+        {canPersist ? t('presets.persistYes') : t('presets.persistNo')}
       </p>
 
       <div className="preset-list">
         {names.length === 0 ? (
-          <p className="preset-empty">Aún no has guardado ningún estilo.</p>
+          <p className="preset-empty">{t('presets.empty')}</p>
         ) : (
           names.map((n) => {
             const p = presets[n]
             return (
               <div className="preset-item" key={n}>
                 <div className="preset-swatch" style={{ background: presetSwatchCss(p) }} />
-                <button className="preset-name" title={`Aplicar “${n}”`} onClick={() => onApply(p)}>
+                <button className="preset-name" title={`${t('presets.apply')} “${n}”`} onClick={() => onApply(p)}>
                   {n}
                 </button>
                 <button className="preset-apply" onClick={() => onApply(p)}>
-                  Aplicar
+                  {t('presets.apply')}
                 </button>
-                <button className="preset-del" title="Borrar" onClick={() => onDelete(n)}>
+                <button className="preset-del" title={t('presets.delete')} onClick={() => onDelete(n)}>
                   ×
                 </button>
               </div>
@@ -128,10 +128,10 @@ export function PresetsPanel({ presets, canPersist, onSave, onApply, onDelete, o
 
       <div className="preset-io">
         <button type="button" className="preset-io-btn" onClick={exportPresets} disabled={names.length === 0}>
-          ↓ Exportar
+          {t('presets.export')}
         </button>
         <button type="button" className="preset-io-btn" onClick={() => fileRef.current?.click()}>
-          ↑ Importar
+          {t('presets.import')}
         </button>
         <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={onFile} />
       </div>

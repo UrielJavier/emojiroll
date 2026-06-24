@@ -4,12 +4,8 @@ import { Segmented } from './Segmented'
 import { PLAN } from '../lib/constants'
 import { encodeGif } from '../lib/encode'
 import { anyMoving } from '../lib/draw'
+import { useI18n } from '../i18n'
 import type { EmojiState, GifResult, Plan } from '../lib/types'
-
-const PLAN_OPTIONS: { value: Plan; label: string }[] = [
-  { value: 'free', label: 'Gratis · máx 128 KB' },
-  { value: 'paid', label: 'De pago · máx 1 MB' },
-]
 
 interface Props {
   state: EmojiState
@@ -34,18 +30,24 @@ export function PreviewPanel({
   ensureFont,
   onEmojiNameChange,
 }: Props) {
-  const demoText = '¡buen trabajo equipo {emoji} a por la siguiente!'
+  const { t } = useI18n()
   const [dark, setDark] = useState(false)
   const [result, setResult] = useState<GifResult | null>(null)
   const [building, setBuilding] = useState(false)
   const [err, setErr] = useState<string | null>(null)
 
+  const demoText = t('preview.demo')
   const idx = demoText.indexOf('{emoji}')
   const before = idx === -1 ? demoText + ' ' : demoText.slice(0, idx)
   const after = idx === -1 ? '' : demoText.slice(idx + 7)
 
   const emojiCode = ':' + (state.emojiName || 'emoji') + ':'
   const isPaid = state.planLimit === PLAN.paid
+
+  const planOptions: { value: Plan; label: string }[] = [
+    { value: 'free', label: t('plan.free') },
+    { value: 'paid', label: t('plan.paid') },
+  ]
 
   const limit = state.planLimit
   const over = result ? result.bytes > limit : false
@@ -55,7 +57,7 @@ export function PreviewPanel({
   const onBuild = async () => {
     setErr(null)
     if (!state.layers.some((l) => l.text.trim())) {
-      setErr('Escribe algún texto primero.')
+      setErr(t('preview.errEmpty'))
       return
     }
     setBuilding(true)
@@ -65,7 +67,7 @@ export function PreviewPanel({
       await new Promise((r) => setTimeout(r, 20))
       setResult(encodeGif(state))
     } catch (e) {
-      setErr('Error al generar el GIF: ' + (e instanceof Error ? e.message : String(e)))
+      setErr(t('preview.errBuild') + (e instanceof Error ? e.message : String(e)))
     } finally {
       setBuilding(false)
     }
@@ -74,9 +76,9 @@ export function PreviewPanel({
   return (
     <div className="panel">
       <div className="preview-head">
-        <h2>Vista previa</h2>
+        <h2>{t('preview.title')}</h2>
         <button className="play-btn" aria-pressed={playing} onClick={onTogglePlay}>
-          {playing ? '❚❚ Pausa' : '▶ Reproducir'}
+          {playing ? t('preview.pause') : t('preview.play')}
         </button>
       </div>
 
@@ -94,17 +96,17 @@ export function PreviewPanel({
           </div>
         </div>
       </div>
-      <p className="scale-note">tamaño real · 128×128</p>
+      <p className="scale-note">{t('preview.realSize')}</p>
 
       <div className={`slack-mock${dark ? ' dark' : ''}`}>
         <div className="mlabel-row">
-          <span className="mlabel">Así se ve en un mensaje</span>
-          <div className="theme-seg" role="group" aria-label="Tema de Slack">
+          <span className="mlabel">{t('preview.inMessage')}</span>
+          <div className="theme-seg" role="group" aria-label={t('preview.themeAria')}>
             <button type="button" aria-pressed={!dark} onClick={() => setDark(false)}>
-              Claro
+              {t('preview.light')}
             </button>
             <button type="button" aria-pressed={dark} onClick={() => setDark(true)}>
-              Oscuro
+              {t('preview.dark')}
             </button>
           </div>
         </div>
@@ -112,7 +114,7 @@ export function PreviewPanel({
           <div className="avatar">U</div>
           <div className="mbody">
             <div>
-              <span className="mname">tú</span>
+              <span className="mname">{t('preview.you')}</span>
               <span className="mtime">10:24</span>
             </div>
             <div className="mtext">
@@ -128,38 +130,36 @@ export function PreviewPanel({
 
       <div className="group" style={{ marginTop: 18 }}>
         <label className="field-label" htmlFor="emojiName">
-          Nombre del emoji <span className="val">{emojiCode}</span>
+          {t('preview.name')} <span className="val">{emojiCode}</span>
         </label>
         <div className="name-row">
           <input
             type="text"
             id="emojiName"
-            placeholder="mi-emoji"
+            placeholder={t('preview.namePlaceholder')}
             autoComplete="off"
             spellCheck={false}
             value={state.emojiName}
             onChange={(e) => onEmojiNameChange(e.target.value)}
           />
         </div>
-        <p className="hint">
-          Se usa como nombre del archivo. Al subirlo, Slack lo propone como nombre del emoji por defecto.
-        </p>
+        <p className="hint">{t('preview.nameHint')}</p>
       </div>
 
       <div className="group" style={{ marginTop: 18 }}>
         <label className="field-label">
-          Plan de Slack <span className="val">{`máx. ${isPaid ? '1 MB' : '128 KB'}`}</span>
+          {t('preview.plan')} <span className="val">{`${t('preview.max')} ${isPaid ? '1 MB' : '128 KB'}`}</span>
         </label>
         <Segmented
-          options={PLAN_OPTIONS}
+          options={planOptions}
           value={isPaid ? 'paid' : 'free'}
           onChange={(p) => set({ planLimit: PLAN[p] })}
-          ariaLabel="Plan de Slack"
+          ariaLabel={t('preview.planAria')}
         />
       </div>
 
       <button className="build-btn" onClick={onBuild} disabled={building}>
-        {building ? 'Creando…' : 'Crear GIF'}
+        {building ? t('preview.building') : t('preview.build')}
       </button>
       {err && <div className="err">{err}</div>}
 
@@ -167,44 +167,39 @@ export function PreviewPanel({
         <div className="result show">
           <div className="result-preview">
             <div className="rp-tile">
-              <img src={result.url} alt="GIF generado" />
+              <img src={result.url} alt={t('result.title')} />
             </div>
             <div className="rp-meta">
-              GIF generado
+              {t('result.title')}
               <br />
-              tamaño real, en bucle
+              {t('result.loop')}
             </div>
           </div>
           <div className="verify">
             <div className="v-row">
-              <span>Dimensiones</span>
+              <span>{t('result.dims')}</span>
               <b>128 × 128</b>
             </div>
             <div className="v-row">
-              <span>Frames</span>
+              <span>{t('result.frames')}</span>
               <b>
-                {result.frames} {result.frames === 1 ? 'frame' : 'frames'}
+                {result.frames} {result.frames === 1 ? t('result.frameOne') : t('result.frameMany')}
               </b>
             </div>
             <div className="v-row">
-              <span>Peso</span>
+              <span>{t('result.weight')}</span>
               <b>{sizeText}</b>
             </div>
             <div className="meter">
               <div className={`meter-fill${over ? ' over' : ''}`} style={{ width: meterPct + '%' }} />
             </div>
             <div className={`status${over ? ' over' : ' ok'}`}>
-              {over ? `⚠ Pasa de ${Math.round(limit / 1024)} KB` : '✓ Listo para Slack'}
+              {over ? `⚠ ${t('result.over')} ${Math.round(limit / 1024)} KB` : t('result.ok')}
             </div>
-            {over && (
-              <p className="tip">
-                No cabe en este plan. Prueba: bajar la suavidad a “Compacto”, acortar el texto, una vuelta más rápida
-                (menos frames) o quitar el fondo transparente.
-              </p>
-            )}
+            {over && <p className="tip">{t('result.tip')}</p>}
           </div>
           <a className="dl-btn" href={result.url} download={`${state.emojiName || 'emoji'}.gif`}>
-            Descargar GIF
+            {t('result.download')}
           </a>
         </div>
       )}

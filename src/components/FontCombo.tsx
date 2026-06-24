@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import { FONT_OPTIONS } from '../lib/constants'
+import { useI18n } from '../i18n'
 import type { FontKey } from '../lib/types'
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function FontCombo({ value, onChange, onPreview, ensureFontKey, ensureAllFonts }: Props) {
+  const { t } = useI18n()
   const [open, setOpen] = useState(false)
   const [activeIdx, setActiveIdx] = useState(() => FONT_OPTIONS.findIndex((o) => o.val === value))
   const comboRef = useRef<HTMLDivElement>(null)
@@ -19,7 +21,7 @@ export function FontCombo({ value, onChange, onPreview, ensureFontKey, ensureAll
   const listRef = useRef<HTMLUListElement>(null)
   const itemRefs = useRef<(HTMLLIElement | null)[]>([])
 
-  const label = FONT_OPTIONS.find((o) => o.val === value)?.label ?? value
+  const label = t(`font.${value}`)
 
   const setActive = (idx: number, preview: boolean) => {
     setActiveIdx(idx)
@@ -111,7 +113,7 @@ export function FontCombo({ value, onChange, onPreview, ensureFontKey, ensureAll
         className="combo-list"
         ref={listRef}
         role="listbox"
-        aria-label="Tipografía"
+        aria-label={t('font.aria')}
         tabIndex={-1}
         hidden={!open}
         onKeyDown={onListKeyDown}
@@ -135,7 +137,7 @@ export function FontCombo({ value, onChange, onPreview, ensureFontKey, ensureAll
             onMouseEnter={() => setActive(i, true)}
             onClick={() => commit(o.val)}
           >
-            {o.label}
+            {t(`font.${o.val}`)}
           </li>
         ))}
       </ul>

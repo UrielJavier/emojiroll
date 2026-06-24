@@ -1,4 +1,4 @@
-import { GIFEncoder, quantize, applyPalette } from './gifenc'
+import { GIFEncoder, quantize, applyPalette } from 'gifenc'
 import { drawScene } from './draw'
 import type { EmojiState, GifResult } from './types'
 

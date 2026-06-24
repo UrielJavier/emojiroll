@@ -12,12 +12,7 @@ const ROOT = '<div id="root"></div>'
 const tpl = readFileSync(FILE, 'utf8')
 if (!tpl.includes(ROOT)) throw new Error('prerender: empty <div id="root"></div> not found')
 
-// ---- Spanish (root) ----
-const esHtml = render('es')
-writeFileSync(FILE, tpl.replace(ROOT, `<div id="root">${esHtml}</div>`))
-console.log(`prerender: es → ${FILE} (${esHtml.length} chars)`)
-
-// ---- Spanish source strings shared by every other page ----
+// ---- Spanish source strings shared by every page ----
 const FROM = {
   htmlLang: '<html lang="es">',
   title: '<title>Emojiroll · crea emojis animados para Slack</title>',
@@ -83,6 +78,27 @@ const PAGES = [
 ]
 
 const U = 'https://urieljavier.github.io/emojiroll'
+
+// ---- Spanish: only the URLs change (/ → /es/); content/title/etc stay. The same
+// page is written to /es/ AND to the bare root, which canonicalizes to /es/. ----
+{
+  const esHtml = render('es')
+  const urlReps = [
+    [FROM.canonical, `<link rel="canonical" href="${U}/es/" />`],
+    [FROM.ogUrl, `<meta property="og:url" content="${U}/es/" />`],
+    [FROM.jsonUrl, `"url": "${U}/es/",`],
+  ]
+  let es = tpl
+  for (const [from, to] of urlReps) {
+    if (!es.includes(from)) throw new Error(`prerender(es): expected string not found: ${from.slice(0, 70)}…`)
+    es = es.split(from).join(to)
+  }
+  const page = es.replace(ROOT, `<div id="root">${esHtml}</div>`)
+  writeFileSync(FILE, page)
+  mkdirSync('dist/es', { recursive: true })
+  writeFileSync('dist/es/index.html', page)
+  console.log(`prerender: es → dist/index.html + dist/es/index.html (${esHtml.length} chars)`)
+}
 
 for (const p of PAGES) {
   const reps = [

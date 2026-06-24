@@ -7,6 +7,7 @@ import { usePresets } from './hooks/usePresets'
 import { computeContrast, sanitizeName } from './lib/color'
 import { useI18n } from './i18n'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
+import { GitHubButton } from './components/GitHubButton'
 import { LayersPanel } from './components/LayersPanel'
 import { LayerEditor } from './components/LayerEditor'
 import { PresetsPanel } from './components/PresetsPanel'
@@ -78,7 +79,7 @@ export default function App() {
     const ok = window.confirm(t('app.resetConfirm'))
     if (!ok) return
     nameEdited.current = false
-    dispatch({ type: 'reset' })
+    dispatch({ type: 'reset', text: t('layer.default') })
   }
 
   return (
@@ -90,6 +91,7 @@ export default function App() {
         </div>
         <div className="topbar-actions">
           <LanguageSwitcher />
+          <GitHubButton />
           <button type="button" className="reset-btn" onClick={onReset}>
             {t('app.reset')}
           </button>
@@ -102,7 +104,7 @@ export default function App() {
             layers={state.layers}
             activeId={state.activeLayerId}
             onSelect={(id) => dispatch({ type: 'setActive', id })}
-            onAdd={() => dispatch({ type: 'addLayer' })}
+            onAdd={() => dispatch({ type: 'addLayer', text: t('layer.new') })}
             onRemove={(id) => dispatch({ type: 'removeLayer', id })}
             onMove={(id, dir) => dispatch({ type: 'moveLayer', id, dir })}
             onReorder={(id, beforeId) => dispatch({ type: 'reorderLayer', id, beforeId })}

@@ -22,6 +22,8 @@ type Dict = Record<string, string>
 const es: Dict = {
   // header / app
   'app.eyebrow': 'Emojis animados para Slack',
+  'layer.default': 'TU MENSAJE',
+  'layer.new': 'TEXTO',
   'app.reset': '↺ Reiniciar',
   'app.resetConfirm':
     '¿Empezar una composición nueva? Se perderá el diseño actual. Tus presets guardados se conservan.',
@@ -206,6 +208,8 @@ const es: Dict = {
 
 const en: Dict = {
   'app.eyebrow': 'Animated emoji for Slack',
+  'layer.default': 'YOUR MESSAGE',
+  'layer.new': 'TEXT',
   'app.reset': '↺ Reset',
   'app.resetConfirm': 'Start a new composition? The current design will be lost. Your saved presets are kept.',
   'lang.label': 'Language',
@@ -377,6 +381,8 @@ const en: Dict = {
 
 const pt: Dict = {
   'app.eyebrow': 'Emoji animado para Slack',
+  'layer.default': 'SUA MENSAGEM',
+  'layer.new': 'TEXTO',
   'app.reset': '↺ Reiniciar',
   'app.resetConfirm': 'Começar uma nova composição? O design atual será perdido. Seus presets salvos são mantidos.',
   'lang.label': 'Idioma',
@@ -537,6 +543,8 @@ const pt: Dict = {
 
 const ja: Dict = {
   'app.eyebrow': 'Slack用アニメ絵文字',
+  'layer.default': 'メッセージ',
+  'layer.new': 'テキスト',
   'app.reset': '↺ リセット',
   'app.resetConfirm': '新しい構成を始めますか？現在のデザインは失われます。保存したプリセットは保持されます。',
   'lang.label': '言語',
@@ -697,6 +705,8 @@ const ja: Dict = {
 
 const ko: Dict = {
   'app.eyebrow': 'Slack용 애니메이션 이모지',
+  'layer.default': '메시지',
+  'layer.new': '텍스트',
   'app.reset': '↺ 초기화',
   'app.resetConfirm': '새 구성을 시작할까요? 현재 디자인은 사라집니다. 저장된 프리셋은 유지됩니다.',
   'lang.label': '언어',
@@ -857,6 +867,11 @@ const ko: Dict = {
 
 const DICT: Record<Lang, Dict> = { es, en, pt, ja, ko }
 
+/** Plain (non-hook) lookup, usable outside React (e.g. state init). */
+export function translate(lang: Lang, key: string): string {
+  return DICT[lang]?.[key] ?? es[key] ?? key
+}
+
 /** The language is defined by the URL: /<base>/<code>/ → that code, root → es. */
 export function detectLang(): Lang {
   if (typeof window !== 'undefined') {
@@ -867,31 +882,29 @@ export function detectLang(): Lang {
 }
 
 /**
- * On the Spanish root, send a first-time visitor to the URL matching their browser
- * language (or a previously chosen language). Guarded so it runs at most once per
- * session and never fights an explicit Spanish choice. Call before rendering.
+ * The bare root (/emojiroll/) is just an entry point: send the visitor to the
+ * per-language URL (/es/, /en/, …) matching a previous choice or their browser,
+ * defaulting to Spanish. Guarded so it runs at most once per session.
  */
 export function maybeRedirectToLang(): void {
   if (typeof window === 'undefined') return
   const base = import.meta.env.BASE_URL // e.g. "/emojiroll/"
   const path = window.location.pathname.replace(/\/+$/, '')
-  if (path !== base.replace(/\/+$/, '')) return // only on the ES root
+  if (path !== base.replace(/\/+$/, '')) return // only on the bare root
+
+  let target: Lang = 'es'
   let saved: string | null = null
   try {
     saved = localStorage.getItem(LANG_KEY)
   } catch {
     /* ignore */
   }
-  if (saved === 'es') return
-
-  let target: Lang | null = null
-  if (saved && saved !== 'es' && (SUPPORTED as string[]).includes(saved)) {
+  if (saved && (SUPPORTED as string[]).includes(saved)) {
     target = saved as Lang
-  } else if (!saved && typeof navigator !== 'undefined' && navigator.language) {
+  } else if (typeof navigator !== 'undefined' && navigator.language) {
     const p = navigator.language.toLowerCase().slice(0, 2)
-    if (p !== 'es' && (SUPPORTED as string[]).includes(p)) target = p as Lang
+    if ((SUPPORTED as string[]).includes(p)) target = p as Lang
   }
-  if (!target) return
 
   try {
     if (sessionStorage.getItem('emojirollLangRedirected')) return

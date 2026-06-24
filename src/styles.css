@@ -27,15 +27,25 @@ body{
 header{margin-bottom:26px}
 header.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .topbar-actions{display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap}
-.lang-seg{flex:none;display:flex;border:1.5px solid var(--ink);border-radius:var(--radius);overflow:hidden}
-.lang-seg button{
-  border:none;background:var(--paper);color:var(--ink-soft);
-  font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:12px;
-  padding:8px 11px;cursor:pointer;border-right:1.5px solid var(--ink);
+/* language dropdown (compact, overrides the full-width global select) */
+.lang-select{
+  width:auto;flex:none;font-family:"Space Grotesk",sans-serif;font-size:13px;font-weight:700;
+  padding:8px 30px 8px 12px;border:1.5px solid var(--ink);border-radius:var(--radius);
+  background:var(--paper);color:var(--ink);cursor:pointer;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);
+  background-position:calc(100% - 15px) 16px,calc(100% - 10px) 16px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;
 }
-.lang-seg button:last-child{border-right:none}
-.lang-seg button.active{background:var(--ink);color:#fff}
-.lang-seg button:focus-visible{outline:2.5px solid var(--blue);outline-offset:-3px}
+.lang-select:focus-visible{outline:2.5px solid var(--blue);outline-offset:1px;border-color:var(--blue)}
+/* GitHub button with star count */
+.gh-btn{
+  flex:none;display:inline-flex;align-items:center;gap:7px;text-decoration:none;
+  border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:var(--radius);
+  font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13px;padding:7px 12px;cursor:pointer;
+}
+.gh-btn:hover{background:var(--paper-2)}
+.gh-btn:focus-visible{outline:2.5px solid var(--blue);outline-offset:2px}
+.gh-btn svg{display:block}
+.gh-star{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:12px;white-space:nowrap}
 .reset-btn{
   flex:none;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);
   border-radius:var(--radius);font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13px;

@@ -8,22 +8,21 @@ export function LanguageSwitcher() {
     if (code === lang) return
     setLang(code) // persist the choice
     const base = import.meta.env.BASE_URL // "/emojiroll/"
-    window.location.assign(code === 'es' ? base : base + code + '/')
+    window.location.assign(base + code + '/')
   }
 
   return (
-    <div className="lang-seg" role="group" aria-label={t('lang.label')}>
+    <select
+      className="lang-select"
+      value={lang}
+      aria-label={t('lang.label')}
+      onChange={(e) => go(e.target.value as Lang)}
+    >
       {langs.map((l) => (
-        <button
-          key={l.code}
-          type="button"
-          aria-pressed={lang === l.code}
-          className={lang === l.code ? 'active' : undefined}
-          onClick={() => go(l.code)}
-        >
+        <option key={l.code} value={l.code}>
           {l.label}
-        </button>
+        </option>
       ))}
-    </div>
+    </select>
   )
 }

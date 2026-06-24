@@ -1,4 +1,5 @@
 import { PLAN } from '../lib/constants'
+import { sanitizeName } from '../lib/color'
 import type { BgType, EmojiState, FillType, StylePreset, TextLayer } from '../lib/types'
 
 let _seq = 0
@@ -61,14 +62,14 @@ export function getActiveLayer(s: EmojiState): TextLayer {
 export type Action =
   | { type: 'patch'; patch: Partial<EmojiState> }
   | { type: 'patchLayer'; id: string; patch: Partial<TextLayer> }
-  | { type: 'addLayer' }
+  | { type: 'addLayer'; text?: string }
   | { type: 'removeLayer'; id: string }
   | { type: 'moveLayer'; id: string; dir: -1 | 1 }
   | { type: 'reorderLayer'; id: string; beforeId: string | null }
   | { type: 'setActive'; id: string }
   | { type: 'swap' }
   | { type: 'applyPreset'; preset: StylePreset }
-  | { type: 'reset' }
+  | { type: 'reset'; text?: string }
 
 const SWATCH_ROTATE = ['#ffd400', '#ff5a1f', '#22b4a0', '#ff2d78', '#b6ff3a', '#7b2ff7']
 
@@ -88,7 +89,7 @@ export function reducer(state: EmojiState, action: Action): EmojiState {
       const color = SWATCH_ROTATE[state.layers.length % SWATCH_ROTATE.length]
       const layer = makeLayer({
         ...active,
-        text: 'TEXTO',
+        text: action.text ?? 'TEXTO',
         fg: color,
         fillType: 'solid',
         speed: Math.min(6, active.speed + 1),
@@ -171,8 +172,15 @@ export function reducer(state: EmojiState, action: Action): EmojiState {
     }
 
     case 'reset': {
-      const layer = makeLayer()
-      return { ...initialState, layers: [layer], activeLayerId: layer.id, previewFont: null }
+      const text = action.text ?? 'IMAGINEERING'
+      const layer = makeLayer({ text })
+      return {
+        ...initialState,
+        layers: [layer],
+        activeLayerId: layer.id,
+        previewFont: null,
+        emojiName: sanitizeName(text) || 'emoji',
+      }
     }
   }
 }

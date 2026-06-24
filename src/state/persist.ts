@@ -1,14 +1,23 @@
 import { initialState, makeLayer } from './reducer'
 import { STATE_STORE_KEY } from '../lib/constants'
+import { detectLang, translate } from '../i18n'
+import { sanitizeName } from '../lib/color'
 import type { EmojiState, TextLayer } from '../lib/types'
+
+/** A fresh composition with the default layer text localized to the current URL's language. */
+function freshDefault(): EmojiState {
+  const text = translate(detectLang(), 'layer.default')
+  const layer = makeLayer({ text })
+  return { ...initialState, layers: [layer], activeLayerId: layer.id, emojiName: sanitizeName(text) || 'emoji' }
+}
 
 /** Restore the work-in-progress state from localStorage, merged over defaults. */
 export function loadState(): EmojiState {
   try {
     const raw = localStorage.getItem(STATE_STORE_KEY)
-    if (!raw) return initialState
+    if (!raw) return freshDefault()
     const parsed = JSON.parse(raw)
-    if (!parsed || typeof parsed !== 'object') return initialState
+    if (!parsed || typeof parsed !== 'object') return freshDefault()
 
     const layersRaw = Array.isArray(parsed.layers) ? parsed.layers : null
     const layers: TextLayer[] = layersRaw && layersRaw.length
@@ -24,7 +33,7 @@ export function loadState(): EmojiState {
     merged.transparent = merged.bgType === 'transparent'
     return merged
   } catch {
-    return initialState
+    return freshDefault()
   }
 }
 

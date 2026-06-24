@@ -25,8 +25,8 @@ body{
 
 /* ---- header ---- */
 header{margin-bottom:26px}
-header.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
-.topbar-actions{display:flex;align-items:center;gap:10px;margin-top:6px}
+header.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.topbar-actions{display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap}
 .lang-seg{flex:none;display:flex;border:1.5px solid var(--ink);border-radius:var(--radius);overflow:hidden}
 .lang-seg button{
   border:none;background:var(--paper);color:var(--ink-soft);

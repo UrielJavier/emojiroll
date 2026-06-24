@@ -8,7 +8,7 @@ export function LanguageSwitcher() {
     if (code === lang) return
     setLang(code) // persist the choice
     const base = import.meta.env.BASE_URL // "/emojiroll/"
-    window.location.assign(code === 'en' ? base + 'en/' : base)
+    window.location.assign(code === 'es' ? base : base + code + '/')
   }
 
   return (

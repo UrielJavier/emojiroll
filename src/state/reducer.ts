@@ -1,6 +1,7 @@
 import { PLAN } from '../lib/constants'
 import { sanitizeName } from '../lib/color'
-import type { BgType, EmojiState, FillType, StylePreset, TextLayer } from '../lib/types'
+import { Fill, Mode } from '../lib/types'
+import type { EmojiState, StylePreset, TextLayer } from '../lib/types'
 
 let _seq = 0
 function newId(): string {
@@ -16,12 +17,12 @@ export function makeLayer(overrides: Partial<TextLayer> = {}): TextLayer {
     size: 58,
     track: 4,
     bold: true,
-    mode: 'left',
+    mode: Mode.Left,
     speed: 1,
     gap: 48,
     angle: 0,
     offsetY: 0,
-    fillType: 'solid',
+    fillType: Fill.Solid,
     fg: '#ffffff',
     gradAngle: 90,
     gradStops: [{ color: '#ff5a1f', pos: 0 }, { color: '#ffd400', pos: 1 }],
@@ -44,7 +45,7 @@ export const initialState: EmojiState = {
   activeLayerId: firstLayer.id,
   previewFont: null,
   bg: '#2f4bd6',
-  bgType: 'solid',
+  bgType: Fill.Solid,
   bgGradAngle: 90,
   bgGradStops: [{ color: '#2f6bff', pos: 0 }, { color: '#9b3bff', pos: 1 }],
   transparent: false,
@@ -91,7 +92,7 @@ export function reducer(state: EmojiState, action: Action): EmojiState {
         ...active,
         text: action.text ?? 'TEXTO',
         fg: color,
-        fillType: 'solid',
+        fillType: Fill.Solid,
         speed: Math.min(6, active.speed + 1),
         offsetY: 0,
       })
@@ -135,7 +136,7 @@ export function reducer(state: EmojiState, action: Action): EmojiState {
         l.id === active.id
           ? {
               ...l,
-              fillType: state.bgType as FillType,
+              fillType: state.bgType,
               fg: state.bg,
               gradStops: state.bgGradStops,
               gradAngle: state.bgGradAngle,
@@ -145,11 +146,11 @@ export function reducer(state: EmojiState, action: Action): EmojiState {
       return {
         ...state,
         layers,
-        bgType: active.fillType as BgType,
+        bgType: active.fillType,
         bg: active.fg,
         bgGradStops: active.gradStops,
         bgGradAngle: active.gradAngle,
-        transparent: (active.fillType as BgType) === 'transparent',
+        transparent: active.fillType === Fill.Transparent,
       }
     }
 
@@ -167,7 +168,7 @@ export function reducer(state: EmojiState, action: Action): EmojiState {
         secPerLoop: preset.secPerLoop,
         fps: preset.fps,
         padding: preset.padding,
-        transparent: preset.bgType === 'transparent',
+        transparent: preset.bgType === Fill.Transparent,
       }
     }
 

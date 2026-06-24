@@ -8,10 +8,19 @@ export type FontKey =
   | 'system'
   | 'mono'
 
-export type Mode = 'left' | 'right' | 'static'
-export type BgType = 'solid' | 'gradient' | 'transparent'
-export type FillType = 'solid' | 'gradient' | 'transparent'
-export type Plan = 'free' | 'paid'
+// Enum-like const objects (erasableSyntaxOnly forbids TS `enum`): use `Mode.Static`
+// etc. instead of bare string literals.
+export const Mode = { Left: 'left', Right: 'right', Static: 'static' } as const
+export type Mode = (typeof Mode)[keyof typeof Mode]
+
+/** Fill kind, shared by the background and each layer's text. */
+export const Fill = { Solid: 'solid', Gradient: 'gradient', Transparent: 'transparent' } as const
+export type Fill = (typeof Fill)[keyof typeof Fill]
+export type BgType = Fill
+export type FillType = Fill
+
+export const Plan = { Free: 'free', Paid: 'paid' } as const
+export type Plan = (typeof Plan)[keyof typeof Plan]
 
 export interface GradStop {
   color: string

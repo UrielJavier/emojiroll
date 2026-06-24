@@ -5,7 +5,8 @@ import { PLAN } from '../lib/constants'
 import { encodeGif } from '../lib/encode'
 import { anyMoving } from '../lib/draw'
 import { useI18n } from '../i18n'
-import type { EmojiState, GifResult, Plan } from '../lib/types'
+import { Plan } from '../lib/types'
+import type { EmojiState, GifResult } from '../lib/types'
 
 interface Props {
   state: EmojiState
@@ -45,8 +46,8 @@ export function PreviewPanel({
   const isPaid = state.planLimit === PLAN.paid
 
   const planOptions: { value: Plan; label: string }[] = [
-    { value: 'free', label: t('plan.free') },
-    { value: 'paid', label: t('plan.paid') },
+    { value: Plan.Free, label: t('plan.free') },
+    { value: Plan.Paid, label: t('plan.paid') },
   ]
 
   const limit = state.planLimit
@@ -152,7 +153,7 @@ export function PreviewPanel({
         </label>
         <Segmented
           options={planOptions}
-          value={isPaid ? 'paid' : 'free'}
+          value={isPaid ? Plan.Paid : Plan.Free}
           onChange={(p) => set({ planLimit: PLAN[p] })}
           ariaLabel={t('preview.planAria')}
         />

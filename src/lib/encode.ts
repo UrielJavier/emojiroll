@@ -1,5 +1,6 @@
 import { GIFEncoder, quantize, applyPalette } from 'gifenc'
 import { drawScene, anyMoving } from './draw'
+import { Fill } from './types'
 import type { EmojiState, GifResult } from './types'
 
 /** frames for a loop of `sec` seconds at `fps`, clamped to [8, 64] */
@@ -18,7 +19,7 @@ function bytesToBase64(bytes: Uint8Array): string {
 
 /** Renders every frame and encodes a looping GIF with gifenc (main thread, no workers). */
 export function encodeGif(state: EmojiState): GifResult {
-  const transparent = state.bgType === 'transparent' || state.layers.some((l) => l.fillType === 'transparent')
+  const transparent = state.bgType === Fill.Transparent || state.layers.some((l) => l.fillType === Fill.Transparent)
   const format = transparent ? 'rgba4444' : 'rgb565'
 
   const off = document.createElement('canvas')

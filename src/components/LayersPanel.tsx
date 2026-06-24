@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import type { DragEvent } from 'react'
 import { useI18n } from '../i18n'
+import { Fill } from '../lib/types'
 import type { TextLayer } from '../lib/types'
 
 function layerSwatch(l: TextLayer): string {
-  if (l.fillType === 'gradient' && l.gradStops.length >= 2) {
+  if (l.fillType === Fill.Gradient && l.gradStops.length >= 2) {
     return (
       'linear-gradient(135deg,' +
       [...l.gradStops].sort((a, b) => a.pos - b.pos).map((s) => `${s.color} ${Math.round(s.pos * 100)}%`).join(',') +
       ')'
     )
   }
-  if (l.fillType === 'transparent') return 'repeating-conic-gradient(#d8d2c4 0% 25%, #f1ecdf 0% 50%) 50% / 10px 10px'
+  if (l.fillType === Fill.Transparent) return 'repeating-conic-gradient(#d8d2c4 0% 25%, #f1ecdf 0% 50%) 50% / 10px 10px'
   return l.fg
 }
 

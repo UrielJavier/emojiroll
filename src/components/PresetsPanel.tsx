@@ -1,12 +1,13 @@
 import { useRef, useState } from 'react'
 import type { ChangeEvent, KeyboardEvent } from 'react'
 import { useI18n } from '../i18n'
+import { Fill } from '../lib/types'
 import type { StylePreset } from '../lib/types'
 
 type PresetMap = Record<string, StylePreset>
 
 function presetSwatchCss(p: StylePreset): string {
-  if (p.bgType === 'gradient' && p.bgGradStops && p.bgGradStops.length >= 2) {
+  if (p.bgType === Fill.Gradient && p.bgGradStops && p.bgGradStops.length >= 2) {
     return (
       'linear-gradient(135deg,' +
       [...p.bgGradStops]
@@ -16,7 +17,7 @@ function presetSwatchCss(p: StylePreset): string {
       ')'
     )
   }
-  if (p.bgType === 'transparent') return 'repeating-conic-gradient(#d8d2c4 0% 25%, #f1ecdf 0% 50%) 50% / 12px 12px'
+  if (p.bgType === Fill.Transparent) return 'repeating-conic-gradient(#d8d2c4 0% 25%, #f1ecdf 0% 50%) 50% / 12px 12px'
   return p.bg
 }
 

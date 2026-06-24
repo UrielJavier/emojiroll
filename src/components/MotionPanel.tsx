@@ -4,7 +4,8 @@ import { SMOOTH_OPTIONS } from '../lib/constants'
 import { framesFor } from '../lib/encode'
 import { anyMoving } from '../lib/draw'
 import { useI18n } from '../i18n'
-import type { EmojiState, Mode, TextLayer } from '../lib/types'
+import { Mode } from '../lib/types'
+import type { EmojiState, TextLayer } from '../lib/types'
 
 interface Props {
   layer: TextLayer
@@ -15,14 +16,14 @@ interface Props {
 
 export function MotionPanel({ layer, setLayer, state, setGlobal }: Props) {
   const { t } = useI18n()
-  const isStatic = layer.mode === 'static'
+  const isStatic = layer.mode === Mode.Static
   const moving = anyMoving(state)
   const framesHint = moving ? `≈ ${framesFor(state.secPerLoop, state.fps)} frames` : t('motion.framesStatic')
 
   const modeOptions: { value: Mode; label: string }[] = [
-    { value: 'left', label: t('motion.mode.left') },
-    { value: 'right', label: t('motion.mode.right') },
-    { value: 'static', label: t('motion.mode.static') },
+    { value: Mode.Left, label: t('motion.mode.left') },
+    { value: Mode.Right, label: t('motion.mode.right') },
+    { value: Mode.Static, label: t('motion.mode.static') },
   ]
 
   return (

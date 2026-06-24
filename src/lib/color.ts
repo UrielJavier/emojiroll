@@ -1,3 +1,4 @@
+import { Fill } from './types'
 import type { EmojiState, TextLayer } from './types'
 
 export type ContrastLevel = 'ok' | 'mid' | 'low' | 'bad'
@@ -58,12 +59,12 @@ export interface ContrastResult {
 
 /** Worst-case contrast between a layer's text and the background, plus localized guidance. */
 export function computeContrast(layer: TextLayer, s: EmojiState, t: (key: string) => string): ContrastResult {
-  const textTransparent = layer.fillType === 'transparent'
-  const bgTransparent = s.bgType === 'transparent'
+  const textTransparent = layer.fillType === Fill.Transparent
+  const bgTransparent = s.bgType === Fill.Transparent
   const textColors =
-    layer.fillType === 'gradient' && layer.gradStops.length ? layer.gradStops.map((x) => x.color) : [layer.fg]
+    layer.fillType === Fill.Gradient && layer.gradStops.length ? layer.gradStops.map((x) => x.color) : [layer.fg]
   const bgColors =
-    s.bgType === 'gradient' && s.bgGradStops.length ? s.bgGradStops.map((x) => x.color) : [s.bg]
+    s.bgType === Fill.Gradient && s.bgGradStops.length ? s.bgGradStops.map((x) => x.color) : [s.bg]
 
   const themeNote = (prefix: string, light: number, dark: number) =>
     `${prefix} ${t('contrast.light')} ${light.toFixed(1)}:1 · ${t('contrast.dark')} ${dark.toFixed(1)}:1. `
@@ -87,9 +88,9 @@ export function computeContrast(layer: TextLayer, s: EmojiState, t: (key: string
     note = themeNote(t('contrast.transparent'), rl, rd)
   } else {
     r = worstPair(textColors, bgColors)
-    if (s.bgType === 'gradient') note = t('contrast.bgGradient') + ' '
+    if (s.bgType === Fill.Gradient) note = t('contrast.bgGradient') + ' '
   }
-  if (layer.fillType === 'gradient') note = t('contrast.textGradient') + ' ' + note
+  if (layer.fillType === Fill.Gradient) note = t('contrast.textGradient') + ' ' + note
 
   const cls = contrastBand(r)
   const fillPct = Math.max(0, Math.min(100, ((r - 1) / 6) * 100))

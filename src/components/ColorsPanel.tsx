@@ -7,6 +7,7 @@ import { DirPad } from './DirPad'
 import { SWATCHES } from '../lib/constants'
 import { contrastFor } from '../lib/color'
 import { useI18n } from '../i18n'
+import { Fill } from '../lib/types'
 import type { ContrastResult } from '../lib/color'
 import type { BgType, EmojiState, FillType, TextLayer } from '../lib/types'
 
@@ -22,13 +23,13 @@ interface Props {
 export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contrast }: Props) {
   const { t } = useI18n()
   const typeOptions = [
-    { value: 'solid', label: t('color.type.solid') },
-    { value: 'gradient', label: t('color.type.gradient') },
-    { value: 'transparent', label: t('color.type.transparent') },
+    { value: Fill.Solid, label: t('color.type.solid') },
+    { value: Fill.Gradient, label: t('color.type.gradient') },
+    { value: Fill.Transparent, label: t('color.type.transparent') },
   ]
 
   const onSwatch = (hex: string) => {
-    setGlobal({ bg: hex, bgType: 'solid', transparent: false })
+    setGlobal({ bg: hex, bgType: Fill.Solid, transparent: false })
     setLayer({ fg: contrastFor(hex) })
   }
 
@@ -45,10 +46,10 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
         <Segmented
           options={typeOptions as { value: BgType; label: string }[]}
           value={state.bgType}
-          onChange={(v) => setGlobal({ bgType: v, transparent: v === 'transparent' })}
+          onChange={(v) => setGlobal({ bgType: v, transparent: v === Fill.Transparent })}
           ariaLabel={t('color.bgTypeAria')}
         />
-        {state.bgType === 'solid' && (
+        {state.bgType === Fill.Solid && (
           <div style={{ marginTop: 12 }}>
             <div className="solid-row">
               <ColorField id="bg" label={t('color.color')} value={state.bg} onChange={(v) => setGlobal({ bg: v })} />
@@ -68,7 +69,7 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
             </div>
           </div>
         )}
-        {state.bgType === 'gradient' && (
+        {state.bgType === Fill.Gradient && (
           <div style={{ marginTop: 12 }}>
             <GradientEditor
               stops={state.bgGradStops}
@@ -79,7 +80,7 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
             />
           </div>
         )}
-        {state.bgType === 'transparent' && <p className="hint">{t('color.bgTransparentHint')}</p>}
+        {state.bgType === Fill.Transparent && <p className="hint">{t('color.bgTransparentHint')}</p>}
       </div>
 
       {/* TEXTO (capa activa) */}
@@ -91,14 +92,14 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
           onChange={(v) => setLayer({ fillType: v })}
           ariaLabel={t('color.fillTypeAria')}
         />
-        {layer.fillType === 'solid' && (
+        {layer.fillType === Fill.Solid && (
           <div style={{ marginTop: 12 }}>
             <div className="solid-row">
               <ColorField id="fg" label={t('color.color')} value={layer.fg} onChange={(v) => setLayer({ fg: v })} />
             </div>
           </div>
         )}
-        {layer.fillType === 'gradient' && (
+        {layer.fillType === Fill.Gradient && (
           <div style={{ marginTop: 12 }}>
             <GradientEditor
               stops={layer.gradStops}
@@ -109,7 +110,7 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
             />
           </div>
         )}
-        {layer.fillType === 'transparent' && <p className="hint">{t('color.textTransparentHint')}</p>}
+        {layer.fillType === Fill.Transparent && <p className="hint">{t('color.textTransparentHint')}</p>}
       </div>
 
       {/* ESTILOS (capa activa) */}

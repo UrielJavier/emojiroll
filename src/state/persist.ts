@@ -2,6 +2,7 @@ import { initialState, makeLayer } from './reducer'
 import { STATE_STORE_KEY } from '../lib/constants'
 import { detectLang, translate } from '../i18n'
 import { sanitizeName } from '../lib/color'
+import { Fill } from '../lib/types'
 import type { EmojiState, TextLayer } from '../lib/types'
 
 /** A fresh composition with the default layer text localized to the current URL's language. */
@@ -30,7 +31,7 @@ export function loadState(): EmojiState {
 
     const merged: EmojiState = { ...initialState, ...parsed, layers, previewFont: null }
     if (!layers.some((l) => l.id === merged.activeLayerId)) merged.activeLayerId = layers[0].id
-    merged.transparent = merged.bgType === 'transparent'
+    merged.transparent = merged.bgType === Fill.Transparent
     return merged
   } catch {
     return freshDefault()

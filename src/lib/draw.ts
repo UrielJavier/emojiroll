@@ -1,4 +1,5 @@
 import { FONTS } from './constants'
+import { Fill, Mode } from './types'
 import type { EmojiState, TextLayer } from './types'
 
 type Ctx = CanvasRenderingContext2D
@@ -49,7 +50,7 @@ function drawWord(ctx: Ctx, m: Measure, x: number, y: number, l: TextLayer, fill
     ctx.strokeStyle = l.strokeColor
     drawChars(ctx, m, x, y, l.track, 'stroke')
   }
-  if (l.fillType === 'transparent') {
+  if (l.fillType === Fill.Transparent) {
     // knockout: punch the glyph out of whatever is behind it
     const prevOp = ctx.globalCompositeOperation
     ctx.globalCompositeOperation = 'destination-out'
@@ -88,7 +89,7 @@ function buildFill(
   asc: number,
   desc: number,
 ): string | CanvasGradient {
-  if (l.fillType !== 'gradient' || !l.gradStops || l.gradStops.length < 2) return l.fg
+  if (l.fillType !== Fill.Gradient || !l.gradStops || l.gradStops.length < 2) return l.fg
   const rad = ((l.gradAngle || 0) * Math.PI) / 180
   const top = y - asc
   const bottom = y + desc
@@ -200,7 +201,7 @@ function drawLayer(ctx: Ctx, layer: TextLayer, state: EmojiState, phaseLoops: nu
   let m = measure(ctx, eff)
   let scale = 1
   if (met.h + strokeExtra > maxH) scale = Math.min(scale, Math.max(0.1, maxH - strokeExtra) / met.h)
-  if (eff.mode === 'static' && m.total + strokeExtra > maxW)
+  if (eff.mode === Mode.Static && m.total + strokeExtra > maxW)
     scale = Math.min(scale, Math.max(0.1, maxW - strokeExtra) / m.total)
   if (scale < 1) {
     eff = { ...eff, size: Math.max(8, Math.floor(eff.size * scale)) }
@@ -221,12 +222,12 @@ function drawLayer(ctx: Ctx, layer: TextLayer, state: EmojiState, phaseLoops: nu
     ctx.translate(-64, -64)
   }
 
-  if (eff.mode === 'static') {
+  if (eff.mode === Mode.Static) {
     const sx = Math.round((128 - m.total) / 2)
     drawWord(ctx, m, sx, y, eff, buildFill(ctx, eff, sx, y, m.total, met.asc, met.desc))
   } else {
     const cycle = m.total + eff.gap
-    const dir = eff.mode === 'right' ? -1 : 1
+    const dir = eff.mode === Mode.Right ? -1 : 1
     const offPx = dir * eff.speed * cycle * phaseLoops
     const off = ((offPx % cycle) + cycle) % cycle
     const base = 128 - off
@@ -251,10 +252,10 @@ function drawLayer(ctx: Ctx, layer: TextLayer, state: EmojiState, phaseLoops: nu
  */
 export function drawScene(ctx: Ctx, state: EmojiState, phaseLoops: number, forEncode: boolean): void {
   ctx.clearRect(0, 0, 128, 128)
-  if (state.bgType === 'gradient') {
+  if (state.bgType === Fill.Gradient) {
     ctx.fillStyle = buildBgGradient(ctx, state)
     ctx.fillRect(0, 0, 128, 128)
-  } else if (state.bgType !== 'transparent') {
+  } else if (state.bgType !== Fill.Transparent) {
     ctx.fillStyle = state.bg
     ctx.fillRect(0, 0, 128, 128)
   }
@@ -265,5 +266,5 @@ export function drawScene(ctx: Ctx, state: EmojiState, phaseLoops: number, forEn
 
 /** True if any layer scrolls (the preview/encoder only needs frames when something moves). */
 export function anyMoving(state: EmojiState): boolean {
-  return state.layers.some((l) => l.mode !== 'static')
+  return state.layers.some((l) => l.mode !== Mode.Static)
 }

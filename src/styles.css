@@ -284,6 +284,17 @@ input[type=color]::-webkit-color-swatch{border:1px solid var(--line);border-radi
 .play-btn:hover{background:var(--paper-2)}
 .play-btn:focus-visible{outline:2.5px solid var(--blue);outline-offset:2px}
 
+/* ---- active-layer tabs ---- */
+.tabs{display:flex;gap:2px;border-bottom:1.5px solid var(--ink);margin-bottom:18px}
+.tabs button{
+  flex:1;border:none;background:transparent;color:var(--ink-soft);
+  font-family:"Space Grotesk",sans-serif;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  padding:9px 6px;cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;
+}
+.tabs button:hover{color:var(--ink)}
+.tabs button.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tabs button:focus-visible{outline:2.5px solid var(--blue);outline-offset:-3px}
+
 /* ---- layers ---- */
 .layer-add{
   flex:none;border:1.5px solid var(--ink);background:var(--blue);color:#fff;border-radius:var(--radius);

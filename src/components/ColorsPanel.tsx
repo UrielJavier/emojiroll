@@ -36,7 +36,7 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
   }
 
   return (
-    <div className="panel panel-colors">
+    <>
       {/* FONDO (global) */}
       <div className="subsection">
         <div className="subhead-row">
@@ -207,6 +207,6 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
       </div>
 
       <ContrastMeter result={contrast} />
-    </div>
+    </>
   )
 }

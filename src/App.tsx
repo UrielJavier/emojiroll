@@ -6,9 +6,7 @@ import { useFonts } from './hooks/useFonts'
 import { usePresets } from './hooks/usePresets'
 import { computeContrast, sanitizeName } from './lib/color'
 import { LayersPanel } from './components/LayersPanel'
-import { TextPanel } from './components/TextPanel'
-import { MotionPanel } from './components/MotionPanel'
-import { ColorsPanel } from './components/ColorsPanel'
+import { LayerEditor } from './components/LayerEditor'
 import { PresetsPanel } from './components/PresetsPanel'
 import { PreviewPanel } from './components/PreviewPanel'
 import type { EmojiState, StylePreset, TextLayer } from './lib/types'
@@ -92,22 +90,17 @@ export default function App() {
             onMove={(id, dir) => dispatch({ type: 'moveLayer', id, dir })}
             onReorder={(id, beforeId) => dispatch({ type: 'reorderLayer', id, beforeId })}
           />
-          <TextPanel
+          <LayerEditor
             layer={active}
             setLayer={setLayer}
+            state={state}
+            setGlobal={setGlobal}
             onTextChange={onTextChange}
             onPreviewFont={(f) => setGlobal({ previewFont: f })}
             showGuide={showGuide}
             onShowGuide={setShowGuide}
             ensureFontKey={fonts.ensureFontKey}
             ensureAllFonts={() => fonts.ensureAllFonts(active.size)}
-          />
-          <MotionPanel layer={active} setLayer={setLayer} state={state} setGlobal={setGlobal} />
-          <ColorsPanel
-            layer={active}
-            setLayer={setLayer}
-            state={state}
-            setGlobal={setGlobal}
             onSwap={() => dispatch({ type: 'swap' })}
             contrast={contrast}
           />

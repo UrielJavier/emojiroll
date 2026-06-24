@@ -24,7 +24,7 @@ export function TextPanel({
   ensureAllFonts,
 }: Props) {
   return (
-    <div className="panel">
+    <>
       <div className="group">
         <label className="field-label" htmlFor="text">
           Texto de la capa
@@ -99,6 +99,6 @@ export function TextPanel({
           vista previa
         </label>
       </RangeField>
-    </div>
+    </>
   )
 }

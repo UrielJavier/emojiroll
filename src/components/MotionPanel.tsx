@@ -24,7 +24,7 @@ export function MotionPanel({ layer, setLayer, state, setGlobal }: Props) {
   const framesHint = moving ? `≈ ${framesFor(state.secPerLoop, state.fps)} frames` : '1 frame (todo fijo)'
 
   return (
-    <div className="panel">
+    <>
       <div className="group">
         <label className="field-label">Movimiento de la capa</label>
         <Segmented options={MODE_OPTIONS} value={layer.mode} onChange={(m) => setLayer({ mode: m })} ariaLabel="Movimiento" />
@@ -91,6 +91,6 @@ export function MotionPanel({ layer, setLayer, state, setGlobal }: Props) {
           hint="Aire alrededor del texto. Si hace falta, la letra se reduce sola para no tocar el borde."
         />
       </div>
-    </div>
+    </>
   )
 }

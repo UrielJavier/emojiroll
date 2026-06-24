@@ -71,12 +71,25 @@ export default function App() {
     setGlobal({ emojiName: sanitizeName(value) || 'emoji' })
   }
   const onApplyPreset = (preset: StylePreset) => dispatch({ type: 'applyPreset', preset })
+  const onReset = () => {
+    const ok = window.confirm(
+      '¿Empezar una composición nueva? Se perderá el diseño actual. Tus presets guardados se conservan.',
+    )
+    if (!ok) return
+    nameEdited.current = false
+    dispatch({ type: 'reset' })
+  }
 
   return (
     <div className="wrap">
-      <header>
-        <p className="eyebrow">Emojis animados para Slack</p>
-        <h1>Emojiroll</h1>
+      <header className="topbar">
+        <div>
+          <p className="eyebrow">Emojis animados para Slack</p>
+          <h1>Emojiroll</h1>
+        </div>
+        <button type="button" className="reset-btn" onClick={onReset} title="Empezar de cero">
+          ↺ Reiniciar
+        </button>
       </header>
 
       <div className="grid">

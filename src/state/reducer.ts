@@ -68,6 +68,7 @@ export type Action =
   | { type: 'setActive'; id: string }
   | { type: 'swap' }
   | { type: 'applyPreset'; preset: StylePreset }
+  | { type: 'reset' }
 
 const SWATCH_ROTATE = ['#ffd400', '#ff5a1f', '#22b4a0', '#ff2d78', '#b6ff3a', '#7b2ff7']
 
@@ -167,6 +168,11 @@ export function reducer(state: EmojiState, action: Action): EmojiState {
         padding: preset.padding,
         transparent: preset.bgType === 'transparent',
       }
+    }
+
+    case 'reset': {
+      const layer = makeLayer()
+      return { ...initialState, layers: [layer], activeLayerId: layer.id, previewFont: null }
     }
   }
 }

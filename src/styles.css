@@ -25,6 +25,15 @@ body{
 
 /* ---- header ---- */
 header{margin-bottom:26px}
+header.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.reset-btn{
+  flex:none;margin-top:6px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);
+  border-radius:var(--radius);font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13px;
+  padding:8px 14px;cursor:pointer;white-space:nowrap;
+}
+.reset-btn:hover{background:var(--paper-2)}
+.reset-btn:active{transform:translateY(1px)}
+.reset-btn:focus-visible{outline:2.5px solid var(--blue);outline-offset:2px}
 .eyebrow{
   font-family:"JetBrains Mono", ui-monospace, monospace;
   font-size:11px;letter-spacing:.18em;text-transform:uppercase;

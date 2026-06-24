@@ -9,6 +9,7 @@ import { useI18n } from './i18n'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { GitHubButton } from './components/GitHubButton'
 import { AboutContent } from './components/AboutContent'
+import { FloatingPreview } from './components/FloatingPreview'
 import { LayersPanel } from './components/LayersPanel'
 import { LayerEditor } from './components/LayerEditor'
 import { PresetsPanel } from './components/PresetsPanel'
@@ -28,6 +29,7 @@ export default function App() {
       : false
   const [playing, setPlaying] = useState(!prefersReducedMotion)
   const [showGuide, setShowGuide] = useState(true)
+  const [previewOpen, setPreviewOpen] = useState(false)
   const nameEdited = useRef(false)
 
   // if a restored state has a custom emoji name, don't auto-derive it from the text
@@ -39,6 +41,7 @@ export default function App() {
 
   const bigRef = useRef<HTMLCanvasElement>(null)
   const inlineRef = useRef<HTMLCanvasElement>(null)
+  const miniRef = useRef<HTMLCanvasElement>(null)
 
   // live refs so the rAF loop always sees the latest values without restarting
   const stateRef = useRef(state)
@@ -49,7 +52,7 @@ export default function App() {
   const fonts = useFonts()
   const presets = usePresets()
 
-  useAnimationLoop(bigRef, inlineRef, stateRef, playingRef)
+  useAnimationLoop(bigRef, inlineRef, stateRef, playingRef, miniRef)
 
   // load the initial committed fonts once
   useEffect(() => {
@@ -134,7 +137,15 @@ export default function App() {
           />
         </div>
 
-        <div className="preview-col">
+        <div className={`preview-col${previewOpen ? ' open' : ''}`}>
+          <button
+            type="button"
+            className="preview-close"
+            onClick={() => setPreviewOpen(false)}
+            aria-label="✕"
+          >
+            ✕
+          </button>
           <PreviewPanel
             state={state}
             set={setGlobal}
@@ -150,6 +161,7 @@ export default function App() {
       </div>
 
       <AboutContent />
+      <FloatingPreview miniRef={miniRef} onOpen={() => setPreviewOpen(true)} hidden={previewOpen} />
     </div>
   )
 }

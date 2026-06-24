@@ -487,6 +487,34 @@ input[type=color]::-webkit-color-swatch{border:1px solid var(--line);border-radi
 .hint{font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.5}
 .err{color:var(--warn);font-size:13px;margin-top:12px;font-weight:600}
 
+/* ---- mobile floating preview + modal (hidden on desktop) ---- */
+.preview-close{display:none}
+.mini-preview{display:none}
+@media (max-width:860px){
+  /* the inline preview column is hidden; reachable via the floating thumbnail */
+  .preview-col{display:none}
+  .preview-col.open{
+    display:block;position:fixed;inset:0;z-index:60;margin:0;max-height:none;overflow:auto;
+    background:var(--paper);padding:18px 16px 44px;
+  }
+  .preview-close{
+    display:flex;position:fixed;top:12px;right:12px;z-index:61;width:38px;height:38px;
+    align-items:center;justify-content:center;border:1.5px solid var(--ink);background:var(--paper);
+    border-radius:var(--radius);cursor:pointer;font-size:15px;color:var(--ink);box-shadow:2px 2px 0 var(--ink);
+  }
+  .mini-preview{
+    display:block;position:fixed;bottom:16px;right:16px;z-index:55;width:64px;height:64px;padding:0;
+    border:2px solid var(--ink);border-radius:12px;cursor:pointer;overflow:hidden;box-shadow:3px 3px 0 var(--ink);
+    background-color:#f1ecdf;
+    background-image:
+      linear-gradient(45deg,#d8d2c4 25%,transparent 25%),linear-gradient(-45deg,#d8d2c4 25%,transparent 25%),
+      linear-gradient(45deg,transparent 75%,#d8d2c4 75%),linear-gradient(-45deg,transparent 75%,#d8d2c4 75%);
+    background-size:12px 12px;background-position:0 0,0 6px,6px -6px,-6px 0;
+  }
+  .mini-preview.hidden{display:none}
+  .mini-preview canvas{width:100%;height:100%;display:block}
+}
+
 @media (prefers-reduced-motion: reduce){
   .build-btn,.dl-btn,.meter-fill{transition:none}
 }

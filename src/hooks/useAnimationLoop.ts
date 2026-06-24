@@ -13,10 +13,12 @@ export function useAnimationLoop(
   inlineRef: RefObject<HTMLCanvasElement | null>,
   stateRef: RefObject<EmojiState>,
   playingRef: RefObject<boolean>,
+  miniRef?: RefObject<HTMLCanvasElement | null>,
 ) {
   useEffect(() => {
     const big = bigRef.current?.getContext('2d') ?? null
     const inline = inlineRef.current?.getContext('2d') ?? null
+    const mini = miniRef?.current?.getContext('2d') ?? null
     let raf = 0
     let phase = 0 // fraction of the master loop elapsed
     let last = 0
@@ -34,9 +36,13 @@ export function useAnimationLoop(
         inline.clearRect(0, 0, 128, 128)
         drawScene(inline, s, phase, false)
       }
+      if (mini) {
+        mini.clearRect(0, 0, 128, 128)
+        drawScene(mini, s, phase, false)
+      }
       raf = requestAnimationFrame(loop)
     }
     raf = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(raf)
-  }, [bigRef, inlineRef, stateRef, playingRef])
+  }, [bigRef, inlineRef, stateRef, playingRef, miniRef])
 }

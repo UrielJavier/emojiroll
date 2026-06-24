@@ -1,99 +1,175 @@
 import { PLAN } from '../lib/constants'
-import type { EmojiState, StylePreset } from '../lib/types'
+import type { BgType, EmojiState, FillType, StylePreset, TextLayer } from '../lib/types'
+
+let _seq = 0
+function newId(): string {
+  _seq += 1
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID()
+  return `layer-${_seq}`
+}
+
+export function makeLayer(overrides: Partial<TextLayer> = {}): TextLayer {
+  return {
+    text: 'IMAGINEERING',
+    font: 'archivo',
+    size: 58,
+    track: 4,
+    bold: true,
+    mode: 'left',
+    speed: 1,
+    gap: 48,
+    angle: 0,
+    offsetY: 0,
+    fillType: 'solid',
+    fg: '#ffffff',
+    gradAngle: 90,
+    gradStops: [{ color: '#ff5a1f', pos: 0 }, { color: '#ffd400', pos: 1 }],
+    shadow: false,
+    shadowColor: '#ff4d3d',
+    shadowDist: 4,
+    shadowAngle: 45,
+    stroke: false,
+    strokeColor: '#16140f',
+    strokeWidth: 3,
+    ...overrides,
+    id: newId(),
+  }
+}
+
+const firstLayer = makeLayer()
 
 export const initialState: EmojiState = {
-  text: 'IMAGINEERING',
-  font: 'archivo',
+  layers: [firstLayer],
+  activeLayerId: firstLayer.id,
   previewFont: null,
-  size: 58,
-  track: 4,
-  mode: 'left',
-  secPerLoop: 5,
-  fps: 18,
-  padding: 6,
-  gap: 48,
   bg: '#2f4bd6',
-  fg: '#ffffff',
-  transparent: false,
-  bold: true,
   bgType: 'solid',
   bgGradAngle: 90,
   bgGradStops: [{ color: '#2f6bff', pos: 0 }, { color: '#9b3bff', pos: 1 }],
-  fillType: 'solid',
-  gradAngle: 90,
-  gradStops: [{ color: '#ff5a1f', pos: 0 }, { color: '#ffd400', pos: 1 }],
-  shadow: false,
-  shadowColor: '#ff4d3d',
-  shadowDist: 4,
-  shadowAngle: 45,
-  stroke: false,
-  strokeColor: '#16140f',
-  strokeWidth: 3,
+  transparent: false,
+  secPerLoop: 5,
+  fps: 18,
+  padding: 6,
   planLimit: PLAN.free,
   emojiName: 'imagineering',
 }
 
+export function getActiveLayer(s: EmojiState): TextLayer {
+  return s.layers.find((l) => l.id === s.activeLayerId) ?? s.layers[0]
+}
+
 export type Action =
   | { type: 'patch'; patch: Partial<EmojiState> }
+  | { type: 'patchLayer'; id: string; patch: Partial<TextLayer> }
+  | { type: 'addLayer' }
+  | { type: 'removeLayer'; id: string }
+  | { type: 'moveLayer'; id: string; dir: -1 | 1 }
+  | { type: 'setActive'; id: string }
   | { type: 'swap' }
   | { type: 'applyPreset'; preset: StylePreset }
+
+const SWATCH_ROTATE = ['#ffd400', '#ff5a1f', '#22b4a0', '#ff2d78', '#b6ff3a', '#7b2ff7']
 
 export function reducer(state: EmojiState, action: Action): EmojiState {
   switch (action.type) {
     case 'patch':
       return { ...state, ...action.patch }
-    case 'swap': {
-      // swap the FULL background and text configuration (type, colour, stops, angle)
-      const next: EmojiState = {
+
+    case 'patchLayer':
+      return {
         ...state,
-        bgType: state.fillType,
-        fillType: state.bgType,
-        bg: state.fg,
-        fg: state.bg,
-        bgGradStops: state.gradStops,
-        gradStops: state.bgGradStops,
-        bgGradAngle: state.gradAngle,
-        gradAngle: state.bgGradAngle,
+        layers: state.layers.map((l) => (l.id === action.id ? { ...l, ...action.patch } : l)),
       }
-      next.transparent = next.bgType === 'transparent'
-      return next
+
+    case 'addLayer': {
+      const active = getActiveLayer(state)
+      const color = SWATCH_ROTATE[state.layers.length % SWATCH_ROTATE.length]
+      const layer = makeLayer({
+        ...active,
+        text: 'TEXTO',
+        fg: color,
+        fillType: 'solid',
+        speed: Math.min(6, active.speed + 1),
+        offsetY: 0,
+      })
+      return { ...state, layers: [...state.layers, layer], activeLayerId: layer.id }
     }
+
+    case 'removeLayer': {
+      if (state.layers.length <= 1) return state
+      const layers = state.layers.filter((l) => l.id !== action.id)
+      const activeLayerId = state.activeLayerId === action.id ? layers[0].id : state.activeLayerId
+      return { ...state, layers, activeLayerId }
+    }
+
+    case 'moveLayer': {
+      const i = state.layers.findIndex((l) => l.id === action.id)
+      const j = i + action.dir
+      if (i < 0 || j < 0 || j >= state.layers.length) return state
+      const layers = state.layers.slice()
+      ;[layers[i], layers[j]] = [layers[j], layers[i]]
+      return { ...state, layers }
+    }
+
+    case 'setActive':
+      return { ...state, activeLayerId: action.id, previewFont: null }
+
+    case 'swap': {
+      const active = getActiveLayer(state)
+      const layers = state.layers.map((l) =>
+        l.id === active.id
+          ? {
+              ...l,
+              fillType: state.bgType as FillType,
+              fg: state.bg,
+              gradStops: state.bgGradStops,
+              gradAngle: state.bgGradAngle,
+            }
+          : l,
+      )
+      return {
+        ...state,
+        layers,
+        bgType: active.fillType as BgType,
+        bg: active.fg,
+        bgGradStops: active.gradStops,
+        bgGradAngle: active.gradAngle,
+        transparent: (active.fillType as BgType) === 'transparent',
+      }
+    }
+
     case 'applyPreset': {
-      const next = { ...state, ...action.preset }
-      next.transparent = next.bgType === 'transparent'
-      return next
+      const preset: StylePreset = JSON.parse(JSON.stringify(action.preset))
+      const layers = preset.layers.map((l) => ({ ...l, id: newId() }))
+      return {
+        ...state,
+        layers,
+        activeLayerId: layers[0]?.id ?? state.activeLayerId,
+        bg: preset.bg,
+        bgType: preset.bgType,
+        bgGradAngle: preset.bgGradAngle,
+        bgGradStops: preset.bgGradStops,
+        secPerLoop: preset.secPerLoop,
+        fps: preset.fps,
+        padding: preset.padding,
+        transparent: preset.bgType === 'transparent',
+      }
     }
   }
 }
 
-/** Snapshot of every style-related field, deep-cloned for a saved preset. */
+/** Snapshot of the whole composition (layers + background + timing), deep-cloned. */
 export function captureStyle(s: EmojiState): StylePreset {
   return JSON.parse(
     JSON.stringify({
-      font: s.font,
-      size: s.size,
-      track: s.track,
-      padding: s.padding,
-      gap: s.gap,
-      mode: s.mode,
-      secPerLoop: s.secPerLoop,
-      fps: s.fps,
-      bold: s.bold,
-      bgType: s.bgType,
+      layers: s.layers,
       bg: s.bg,
+      bgType: s.bgType,
       bgGradAngle: s.bgGradAngle,
       bgGradStops: s.bgGradStops,
-      fillType: s.fillType,
-      fg: s.fg,
-      gradAngle: s.gradAngle,
-      gradStops: s.gradStops,
-      shadow: s.shadow,
-      shadowColor: s.shadowColor,
-      shadowDist: s.shadowDist,
-      shadowAngle: s.shadowAngle,
-      stroke: s.stroke,
-      strokeColor: s.strokeColor,
-      strokeWidth: s.strokeWidth,
+      secPerLoop: s.secPerLoop,
+      fps: s.fps,
+      padding: s.padding,
     }),
   )
 }

@@ -1,4 +1,4 @@
-import type { EmojiState } from './types'
+import type { EmojiState, TextLayer } from './types'
 
 export type ContrastLevel = 'ok' | 'mid' | 'low' | 'bad'
 
@@ -56,12 +56,12 @@ export interface ContrastResult {
   msg: string
 }
 
-/** Mirrors the original updateContrast(): worst-case text/background contrast plus guidance. */
-export function computeContrast(s: EmojiState): ContrastResult {
-  const textTransparent = s.fillType === 'transparent'
+/** Worst-case contrast between a layer's text and the background, plus guidance. */
+export function computeContrast(layer: TextLayer, s: EmojiState): ContrastResult {
+  const textTransparent = layer.fillType === 'transparent'
   const bgTransparent = s.bgType === 'transparent'
   const textColors =
-    s.fillType === 'gradient' && s.gradStops.length ? s.gradStops.map((x) => x.color) : [s.fg]
+    layer.fillType === 'gradient' && layer.gradStops.length ? layer.gradStops.map((x) => x.color) : [layer.fg]
   const bgColors =
     s.bgType === 'gradient' && s.bgGradStops.length ? s.bgGradStops.map((x) => x.color) : [s.bg]
 
@@ -91,10 +91,10 @@ export function computeContrast(s: EmojiState): ContrastResult {
     r = worstPair(textColors, bgColors)
     if (s.bgType === 'gradient') note = 'Fondo degradado. '
   }
-  if (s.fillType === 'gradient') note = 'Texto degradado (peor parada). ' + note
+  if (layer.fillType === 'gradient') note = 'Texto degradado (peor parada). ' + note
 
   const band = contrastBand(r)
   const fillPct = Math.max(0, Math.min(100, ((r - 1) / 6) * 100))
-  const extra = !s.stroke && (band.cls === 'low' || band.cls === 'bad') ? ' Prueba activar el contorno.' : ''
+  const extra = !layer.stroke && (band.cls === 'low' || band.cls === 'bad') ? ' Prueba activar el contorno.' : ''
   return { level: band.cls, ratioText: `${r.toFixed(1)}:1`, fillPct, msg: note + band.msg + extra }
 }

@@ -18,28 +18,30 @@ export interface GradStop {
   pos: number
 }
 
-export interface EmojiState {
+/** One independent line of text. Multiple layers stack to make parallax/diagonal scenes. */
+export interface TextLayer {
+  id: string
   text: string
   font: FontKey
-  /** preview-only font override while hovering the font picker; encoding ignores it */
-  previewFont: FontKey | null
   size: number
   track: number
-  mode: Mode
-  secPerLoop: number
-  fps: number
-  padding: number
-  gap: number
-  bg: string
-  fg: string
-  transparent: boolean
   bold: boolean
-  bgType: BgType
-  bgGradAngle: number
-  bgGradStops: GradStop[]
+  // motion
+  mode: Mode
+  /** cycles travelled per master loop (1..6) — different values create parallax */
+  speed: number
+  gap: number
+  // placement
+  /** diagonal rotation in degrees (0 = horizontal) */
+  angle: number
+  /** vertical offset from the canvas centre, in px */
+  offsetY: number
+  // fill
   fillType: FillType
+  fg: string
   gradAngle: number
   gradStops: GradStop[]
+  // styles
   shadow: boolean
   shadowColor: string
   shadowDist: number
@@ -47,14 +49,32 @@ export interface EmojiState {
   stroke: boolean
   strokeColor: string
   strokeWidth: number
+}
+
+export interface EmojiState {
+  layers: TextLayer[]
+  activeLayerId: string
+  /** preview-only font override (hover) applied to the active layer; encoding ignores it */
+  previewFont: FontKey | null
+  // background (global)
+  bg: string
+  bgType: BgType
+  bgGradAngle: number
+  bgGradStops: GradStop[]
+  transparent: boolean
+  // global timing / output
+  /** master loop duration in seconds; every layer loops seamlessly within it */
+  secPerLoop: number
+  fps: number
+  padding: number
   planLimit: number
   emojiName: string
 }
 
-/** The subset of state that a saved preset captures (everything style-related). */
-export type StylePreset = Omit<
+/** A saved preset captures the whole composition (layers + background + timing). */
+export type StylePreset = Pick<
   EmojiState,
-  'text' | 'previewFont' | 'transparent' | 'planLimit' | 'emojiName'
+  'layers' | 'bg' | 'bgType' | 'bgGradAngle' | 'bgGradStops' | 'secPerLoop' | 'fps' | 'padding'
 >
 
 export interface GifResult {

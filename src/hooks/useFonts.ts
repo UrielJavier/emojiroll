@@ -21,7 +21,10 @@ export function useFonts() {
     return Promise.all(proms).catch(() => {})
   }, [])
 
-  const ensureFont = useCallback((s: EmojiState) => ensureFontKey(s.font, s.size), [ensureFontKey])
+  const ensureFont = useCallback(
+    (s: EmojiState) => Promise.all(s.layers.map((l) => ensureFontKey(l.font, l.size))),
+    [ensureFontKey],
+  )
 
   const ensureAllFonts = useCallback(
     (size?: number) => {

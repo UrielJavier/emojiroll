@@ -88,5 +88,5 @@ export const SMOOTH_OPTIONS = [
   { value: 25, label: 'Suave — más frames, más peso' },
 ]
 
-export const PRESETS_STORE_KEY = 'slackEmojiPresets_v1'
-export const STATE_STORE_KEY = 'slackEmojiState_v1'
+export const PRESETS_STORE_KEY = 'slackEmojiPresets_v2'
+export const STATE_STORE_KEY = 'slackEmojiState_v2'

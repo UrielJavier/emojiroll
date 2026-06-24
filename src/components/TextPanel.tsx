@@ -1,28 +1,38 @@
 import { FontCombo } from './FontCombo'
 import { RangeField } from './RangeField'
-import type { EmojiState, FontKey } from '../lib/types'
+import type { FontKey, TextLayer } from '../lib/types'
 
 interface Props {
-  state: EmojiState
-  set: (patch: Partial<EmojiState>) => void
+  layer: TextLayer
+  setLayer: (patch: Partial<TextLayer>) => void
   onTextChange: (value: string) => void
+  onPreviewFont: (font: FontKey | null) => void
   showGuide: boolean
   onShowGuide: (value: boolean) => void
   ensureFontKey: (font: FontKey) => void
   ensureAllFonts: () => void
 }
 
-export function TextPanel({ state, set, onTextChange, showGuide, onShowGuide, ensureFontKey, ensureAllFonts }: Props) {
+export function TextPanel({
+  layer,
+  setLayer,
+  onTextChange,
+  onPreviewFont,
+  showGuide,
+  onShowGuide,
+  ensureFontKey,
+  ensureAllFonts,
+}: Props) {
   return (
     <div className="panel">
       <div className="group">
         <label className="field-label" htmlFor="text">
-          Texto
+          Texto de la capa
         </label>
         <input
           type="text"
           id="text"
-          value={state.text}
+          value={layer.text}
           maxLength={40}
           autoComplete="off"
           onChange={(e) => onTextChange(e.target.value)}
@@ -35,9 +45,9 @@ export function TextPanel({ state, set, onTextChange, showGuide, onShowGuide, en
           Tipografía <span className="val">pasa el ratón para previsualizar</span>
         </label>
         <FontCombo
-          value={state.font}
-          onChange={(f) => set({ font: f })}
-          onPreview={(f) => set({ previewFont: f })}
+          value={layer.font}
+          onChange={(f) => setLayer({ font: f })}
+          onPreview={onPreviewFont}
           ensureFontKey={ensureFontKey}
           ensureAllFonts={ensureAllFonts}
         />
@@ -46,34 +56,47 @@ export function TextPanel({ state, set, onTextChange, showGuide, onShowGuide, en
       <RangeField
         id="size"
         label="Tamaño de letra"
-        valueText={`${state.size} px`}
+        valueText={`${layer.size} px`}
         min={24}
         max={92}
-        value={state.size}
-        onChange={(v) => set({ size: v })}
+        value={layer.size}
+        onChange={(v) => setLayer({ size: v })}
       />
       <RangeField
         id="track"
         label="Espaciado entre letras"
-        valueText={`${state.track} px`}
+        valueText={`${layer.track} px`}
         min={0}
         max={24}
-        value={state.track}
-        onChange={(v) => set({ track: v })}
+        value={layer.track}
+        onChange={(v) => setLayer({ track: v })}
       />
       <RangeField
-        id="pad"
-        label="Margen"
-        valueText={`${state.padding} px`}
-        min={0}
-        max={28}
-        value={state.padding}
-        onChange={(v) => set({ padding: v })}
-        hint="Aire alrededor del texto. Si hace falta, la letra se reduce sola para no tocar el borde."
+        id="angle"
+        label="Ángulo (diagonal)"
+        valueText={`${layer.angle}°`}
+        min={-45}
+        max={45}
+        step={5}
+        value={layer.angle}
+        onChange={(v) => setLayer({ angle: v })}
+      />
+      <RangeField
+        id="offsetY"
+        label="Posición vertical"
+        valueText={`${layer.offsetY > 0 ? '+' : ''}${layer.offsetY} px`}
+        min={-48}
+        max={48}
+        value={layer.offsetY}
+        onChange={(v) => setLayer({ offsetY: v })}
+        hint="Sube o baja esta capa para apilar varias palabras."
       >
         <label className="chk" style={{ marginTop: 6 }}>
-          <input type="checkbox" checked={showGuide} onChange={(e) => onShowGuide(e.target.checked)} /> Ver guía en la vista
-          previa
+          <input type="checkbox" checked={layer.bold} onChange={(e) => setLayer({ bold: e.target.checked })} /> Negrita
+        </label>
+        <label className="chk" style={{ marginTop: 6 }}>
+          <input type="checkbox" checked={showGuide} onChange={(e) => onShowGuide(e.target.checked)} /> Ver guía en la
+          vista previa
         </label>
       </RangeField>
     </div>

@@ -1,5 +1,5 @@
 import { GIFEncoder, quantize, applyPalette } from 'gifenc'
-import { drawScene } from './draw'
+import { drawScene, anyMoving } from './draw'
 import type { EmojiState, GifResult } from './types'
 
 /** frames for a loop of `sec` seconds at `fps`, clamped to [8, 64] */
@@ -18,7 +18,7 @@ function bytesToBase64(bytes: Uint8Array): string {
 
 /** Renders every frame and encodes a looping GIF with gifenc (main thread, no workers). */
 export function encodeGif(state: EmojiState): GifResult {
-  const transparent = state.bgType === 'transparent' || state.fillType === 'transparent'
+  const transparent = state.bgType === 'transparent' || state.layers.some((l) => l.fillType === 'transparent')
   const format = transparent ? 'rgba4444' : 'rgb565'
 
   const off = document.createElement('canvas')
@@ -27,23 +27,20 @@ export function encodeGif(state: EmojiState): GifResult {
   const octx = off.getContext('2d')
   if (!octx) throw new Error('No se pudo crear el contexto de dibujo.')
 
-  // frame plan
-  const m0 = drawScene(octx, state, 0, true)
+  // frame plan: a static-only scene is a single frame; otherwise sample the master loop
+  const moving = anyMoving(state)
   let frames: number
-  let step: number
   let delay: number
-  if (state.mode === 'static') {
+  if (!moving) {
     frames = 1
-    step = 0
     delay = 100
   } else {
     frames = framesFor(state.secPerLoop, state.fps)
-    step = m0.cycle / frames
     delay = Math.round((state.secPerLoop * 1000) / frames) // loop lasts exactly secPerLoop
   }
-  const dir = state.mode === 'right' ? -1 : 1
 
   // build a single palette from frame 0 (all frames share the same colors)
+  drawScene(octx, state, 0, true)
   const data0 = octx.getImageData(0, 0, 128, 128).data
   const palette = quantize(data0, 256, { format })
   let transparentIndex = 0
@@ -57,7 +54,7 @@ export function encodeGif(state: EmojiState): GifResult {
 
   const enc = GIFEncoder()
   for (let i = 0; i < frames; i++) {
-    drawScene(octx, state, dir * i * step, true)
+    drawScene(octx, state, i / frames, true) // phaseLoops in [0, 1): frame `frames` == frame 0
     const data = octx.getImageData(0, 0, 128, 128).data
     const index = applyPalette(data, palette, format)
     const opts: Record<string, unknown> = { delay, dispose: transparent ? 2 : 0 }

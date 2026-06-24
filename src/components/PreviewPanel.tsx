@@ -3,6 +3,7 @@ import type { RefObject } from 'react'
 import { Segmented } from './Segmented'
 import { PLAN } from '../lib/constants'
 import { encodeGif } from '../lib/encode'
+import { anyMoving } from '../lib/draw'
 import type { EmojiState, GifResult, Plan } from '../lib/types'
 
 const PLAN_OPTIONS: { value: Plan; label: string }[] = [
@@ -53,7 +54,7 @@ export function PreviewPanel({
 
   const onBuild = async () => {
     setErr(null)
-    if (!state.text.trim()) {
+    if (!state.layers.some((l) => l.text.trim())) {
       setErr('Escribe algún texto primero.')
       return
     }
@@ -86,7 +87,7 @@ export function PreviewPanel({
           <div className="checker">
             <canvas id="previewBig" ref={bigRef} width={128} height={128} />
             <div
-              className={`margin-guide${state.mode !== 'static' ? ' scroll' : ''}`}
+              className={`margin-guide${anyMoving(state) ? ' scroll' : ''}`}
               style={{ inset: state.padding }}
               hidden={!showGuide}
             />

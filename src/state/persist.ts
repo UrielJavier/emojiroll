@@ -1,6 +1,6 @@
-import { initialState } from './reducer'
+import { initialState, makeLayer } from './reducer'
 import { STATE_STORE_KEY } from '../lib/constants'
-import type { EmojiState } from '../lib/types'
+import type { EmojiState, TextLayer } from '../lib/types'
 
 /** Restore the work-in-progress state from localStorage, merged over defaults. */
 export function loadState(): EmojiState {
@@ -9,8 +9,18 @@ export function loadState(): EmojiState {
     if (!raw) return initialState
     const parsed = JSON.parse(raw)
     if (!parsed || typeof parsed !== 'object') return initialState
-    // merge over defaults so newly-added fields are filled; the hover preview is transient
-    const merged: EmojiState = { ...initialState, ...parsed, previewFont: null }
+
+    const layersRaw = Array.isArray(parsed.layers) ? parsed.layers : null
+    const layers: TextLayer[] = layersRaw && layersRaw.length
+      ? layersRaw.map((l: Partial<TextLayer>) => {
+          const merged = { ...makeLayer(), ...l } as TextLayer
+          if (l.id) merged.id = l.id
+          return merged
+        })
+      : initialState.layers
+
+    const merged: EmojiState = { ...initialState, ...parsed, layers, previewFont: null }
+    if (!layers.some((l) => l.id === merged.activeLayerId)) merged.activeLayerId = layers[0].id
     merged.transparent = merged.bgType === 'transparent'
     return merged
   } catch {

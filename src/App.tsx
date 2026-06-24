@@ -1,20 +1,23 @@
 import { useEffect, useReducer, useRef, useState } from 'react'
-import { reducer, initialState, captureStyle } from './state/reducer'
+import { reducer, initialState, captureStyle, getActiveLayer } from './state/reducer'
 import { loadState, saveState } from './state/persist'
 import { useAnimationLoop } from './hooks/useAnimationLoop'
 import { useFonts } from './hooks/useFonts'
 import { usePresets } from './hooks/usePresets'
 import { computeContrast, sanitizeName } from './lib/color'
+import { LayersPanel } from './components/LayersPanel'
 import { TextPanel } from './components/TextPanel'
 import { MotionPanel } from './components/MotionPanel'
 import { ColorsPanel } from './components/ColorsPanel'
 import { PresetsPanel } from './components/PresetsPanel'
 import { PreviewPanel } from './components/PreviewPanel'
-import type { EmojiState, StylePreset } from './lib/types'
+import type { EmojiState, StylePreset, TextLayer } from './lib/types'
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState, loadState)
-  const set = (patch: Partial<EmojiState>) => dispatch({ type: 'patch', patch })
+  const active = getActiveLayer(state)
+  const setGlobal = (patch: Partial<EmojiState>) => dispatch({ type: 'patch', patch })
+  const setLayer = (patch: Partial<TextLayer>) => dispatch({ type: 'patchLayer', id: state.activeLayerId, patch })
 
   const prefersReducedMotion =
     typeof window !== 'undefined' && window.matchMedia
@@ -28,7 +31,7 @@ export default function App() {
   const didInit = useRef(false)
   if (!didInit.current) {
     didInit.current = true
-    nameEdited.current = state.emojiName !== (sanitizeName(state.text) || 'emoji')
+    nameEdited.current = state.emojiName !== (sanitizeName(state.layers[0].text) || 'emoji')
   }
 
   const bigRef = useRef<HTMLCanvasElement>(null)
@@ -45,7 +48,7 @@ export default function App() {
 
   useAnimationLoop(bigRef, inlineRef, stateRef, playingRef)
 
-  // load the initial committed font once
+  // load the initial committed fonts once
   useEffect(() => {
     fonts.ensureFont(stateRef.current)
   }, [fonts])
@@ -56,16 +59,18 @@ export default function App() {
     return () => clearTimeout(id)
   }, [state])
 
-  const contrast = computeContrast(state)
+  const contrast = computeContrast(active, state)
 
   const onTextChange = (value: string) => {
-    const patch: Partial<EmojiState> = { text: value }
-    if (!nameEdited.current) patch.emojiName = sanitizeName(value) || 'emoji'
-    set(patch)
+    dispatch({ type: 'patchLayer', id: state.activeLayerId, patch: { text: value } })
+    if (!nameEdited.current) {
+      const firstText = state.activeLayerId === state.layers[0].id ? value : state.layers[0].text
+      dispatch({ type: 'patch', patch: { emojiName: sanitizeName(firstText) || 'emoji' } })
+    }
   }
   const onEmojiNameChange = (value: string) => {
     nameEdited.current = true
-    set({ emojiName: sanitizeName(value) || 'emoji' })
+    setGlobal({ emojiName: sanitizeName(value) || 'emoji' })
   }
   const onApplyPreset = (preset: StylePreset) => dispatch({ type: 'applyPreset', preset })
 
@@ -78,17 +83,33 @@ export default function App() {
 
       <div className="grid">
         <div>
+          <LayersPanel
+            layers={state.layers}
+            activeId={state.activeLayerId}
+            onSelect={(id) => dispatch({ type: 'setActive', id })}
+            onAdd={() => dispatch({ type: 'addLayer' })}
+            onRemove={(id) => dispatch({ type: 'removeLayer', id })}
+            onMove={(id, dir) => dispatch({ type: 'moveLayer', id, dir })}
+          />
           <TextPanel
-            state={state}
-            set={set}
+            layer={active}
+            setLayer={setLayer}
             onTextChange={onTextChange}
+            onPreviewFont={(f) => setGlobal({ previewFont: f })}
             showGuide={showGuide}
             onShowGuide={setShowGuide}
             ensureFontKey={fonts.ensureFontKey}
-            ensureAllFonts={() => fonts.ensureAllFonts(state.size)}
+            ensureAllFonts={() => fonts.ensureAllFonts(active.size)}
           />
-          <MotionPanel state={state} set={set} />
-          <ColorsPanel state={state} set={set} onSwap={() => dispatch({ type: 'swap' })} contrast={contrast} />
+          <MotionPanel layer={active} setLayer={setLayer} state={state} setGlobal={setGlobal} />
+          <ColorsPanel
+            layer={active}
+            setLayer={setLayer}
+            state={state}
+            setGlobal={setGlobal}
+            onSwap={() => dispatch({ type: 'swap' })}
+            contrast={contrast}
+          />
           <PresetsPanel
             presets={presets.presets}
             canPersist={presets.canPersist}
@@ -102,7 +123,7 @@ export default function App() {
         <div className="preview-col">
           <PreviewPanel
             state={state}
-            set={set}
+            set={setGlobal}
             playing={playing}
             onTogglePlay={() => setPlaying((p) => !p)}
             showGuide={showGuide}

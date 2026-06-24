@@ -2,14 +2,15 @@ import { useState } from 'react'
 import { TextPanel } from './TextPanel'
 import { MotionPanel } from './MotionPanel'
 import { ColorsPanel } from './ColorsPanel'
+import { useI18n } from '../i18n'
 import type { ContrastResult } from '../lib/color'
 import type { EmojiState, FontKey, TextLayer } from '../lib/types'
 
 type Tab = 'texto' | 'movimiento' | 'color'
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'texto', label: 'Texto' },
-  { id: 'movimiento', label: 'Movimiento' },
-  { id: 'color', label: 'Color' },
+const TABS: { id: Tab; key: string }[] = [
+  { id: 'texto', key: 'tabs.text' },
+  { id: 'movimiento', key: 'tabs.motion' },
+  { id: 'color', key: 'tabs.color' },
 ]
 
 interface Props {
@@ -29,20 +30,21 @@ interface Props {
 
 /** A single card that edits the active layer, with Texto / Movimiento / Color tabs. */
 export function LayerEditor(props: Props) {
+  const { t } = useI18n()
   const [tab, setTab] = useState<Tab>('texto')
   return (
     <div className="panel">
       <div className="tabs" role="tablist" aria-label="Editar capa activa">
-        {TABS.map((t) => (
+        {TABS.map((tabDef) => (
           <button
-            key={t.id}
+            key={tabDef.id}
             type="button"
             role="tab"
-            aria-selected={tab === t.id}
-            className={tab === t.id ? 'active' : undefined}
-            onClick={() => setTab(t.id)}
+            aria-selected={tab === tabDef.id}
+            className={tab === tabDef.id ? 'active' : undefined}
+            onClick={() => setTab(tabDef.id)}
           >
-            {t.label}
+            {t(tabDef.key)}
           </button>
         ))}
       </div>

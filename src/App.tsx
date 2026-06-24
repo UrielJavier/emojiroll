@@ -5,6 +5,8 @@ import { useAnimationLoop } from './hooks/useAnimationLoop'
 import { useFonts } from './hooks/useFonts'
 import { usePresets } from './hooks/usePresets'
 import { computeContrast, sanitizeName } from './lib/color'
+import { useI18n } from './i18n'
+import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { LayersPanel } from './components/LayersPanel'
 import { LayerEditor } from './components/LayerEditor'
 import { PresetsPanel } from './components/PresetsPanel'
@@ -12,6 +14,7 @@ import { PreviewPanel } from './components/PreviewPanel'
 import type { EmojiState, StylePreset, TextLayer } from './lib/types'
 
 export default function App() {
+  const { t } = useI18n()
   const [state, dispatch] = useReducer(reducer, initialState, loadState)
   const active = getActiveLayer(state)
   const setGlobal = (patch: Partial<EmojiState>) => dispatch({ type: 'patch', patch })
@@ -72,9 +75,7 @@ export default function App() {
   }
   const onApplyPreset = (preset: StylePreset) => dispatch({ type: 'applyPreset', preset })
   const onReset = () => {
-    const ok = window.confirm(
-      '¿Empezar una composición nueva? Se perderá el diseño actual. Tus presets guardados se conservan.',
-    )
+    const ok = window.confirm(t('app.resetConfirm'))
     if (!ok) return
     nameEdited.current = false
     dispatch({ type: 'reset' })
@@ -84,12 +85,15 @@ export default function App() {
     <div className="wrap">
       <header className="topbar">
         <div>
-          <p className="eyebrow">Emojis animados para Slack</p>
+          <p className="eyebrow">{t('app.eyebrow')}</p>
           <h1>Emojiroll</h1>
         </div>
-        <button type="button" className="reset-btn" onClick={onReset} title="Empezar de cero">
-          ↺ Reiniciar
-        </button>
+        <div className="topbar-actions">
+          <LanguageSwitcher />
+          <button type="button" className="reset-btn" onClick={onReset}>
+            {t('app.reset')}
+          </button>
+        </div>
       </header>
 
       <div className="grid">

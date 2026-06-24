@@ -26,8 +26,18 @@ body{
 /* ---- header ---- */
 header{margin-bottom:26px}
 header.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.topbar-actions{display:flex;align-items:center;gap:10px;margin-top:6px}
+.lang-seg{flex:none;display:flex;border:1.5px solid var(--ink);border-radius:var(--radius);overflow:hidden}
+.lang-seg button{
+  border:none;background:var(--paper);color:var(--ink-soft);
+  font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:12px;
+  padding:8px 11px;cursor:pointer;border-right:1.5px solid var(--ink);
+}
+.lang-seg button:last-child{border-right:none}
+.lang-seg button.active{background:var(--ink);color:#fff}
+.lang-seg button:focus-visible{outline:2.5px solid var(--blue);outline-offset:-3px}
 .reset-btn{
-  flex:none;margin-top:6px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);
+  flex:none;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);
   border-radius:var(--radius);font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13px;
   padding:8px 14px;cursor:pointer;white-space:nowrap;
 }

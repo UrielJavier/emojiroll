@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { DragEvent } from 'react'
+import { useI18n } from '../i18n'
 import type { TextLayer } from '../lib/types'
 
 function layerSwatch(l: TextLayer): string {
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMove, onReorder }: Props) {
+  const { t } = useI18n()
   const [dragId, setDragId] = useState<string | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
 
@@ -52,9 +54,9 @@ export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMov
   return (
     <div className="panel">
       <div className="subhead-row">
-        <span className="subhead">Capas</span>
-        <button type="button" className="layer-add" onClick={onAdd} title="Añadir capa">
-          + Capa
+        <span className="subhead">{t('layers.title')}</span>
+        <button type="button" className="layer-add" onClick={onAdd} title={t('layers.add')}>
+          {t('layers.add')}
         </button>
       </div>
       <div className="layer-list">
@@ -80,15 +82,15 @@ export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMov
             onDragEnd={clear}
             onClick={() => onSelect(l.id)}
           >
-            <span className="layer-grip" aria-hidden="true" title="Arrastra para reordenar">
+            <span className="layer-grip" aria-hidden="true" title={t('layers.drag')}>
               ⠿
             </span>
             <span className="layer-swatch" style={{ background: layerSwatch(l) }} />
-            <span className="layer-name">{l.text || '(vacío)'}</span>
+            <span className="layer-name">{l.text || t('layers.empty')}</span>
             <button
               type="button"
               className="layer-btn"
-              title="Subir"
+              title={t('layers.move.up')}
               disabled={i === 0}
               onClick={(e) => {
                 e.stopPropagation()
@@ -100,7 +102,7 @@ export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMov
             <button
               type="button"
               className="layer-btn"
-              title="Bajar"
+              title={t('layers.move.down')}
               disabled={i === layers.length - 1}
               onClick={(e) => {
                 e.stopPropagation()
@@ -112,7 +114,7 @@ export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMov
             <button
               type="button"
               className="layer-btn del"
-              title="Borrar capa"
+              title={t('layers.delete')}
               disabled={layers.length <= 1}
               onClick={(e) => {
                 e.stopPropagation()
@@ -125,8 +127,7 @@ export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMov
         ))}
       </div>
       <p className="hint" style={{ marginTop: 10 }}>
-        Arrastra para reordenar (o usa ↑↓). El orden es la profundidad: las de arriba se dibujan detrás. Cada capa tiene
-        su velocidad y ángulo → parallax.
+        {t('layers.hint')}
       </p>
     </div>
   )

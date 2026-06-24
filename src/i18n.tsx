@@ -139,6 +139,7 @@ const es: Dict = {
 
   // preview
   'preview.title': 'Vista previa',
+  'preview.openMe': '¡Ábreme!',
   'preview.pause': '❚❚ Pausa',
   'preview.play': '▶ Reproducir',
   'preview.realSize': 'tamaño real · 128×128',
@@ -329,6 +330,7 @@ const en: Dict = {
   'font.mono': 'Monospaced',
 
   'preview.title': 'Preview',
+  'preview.openMe': 'Open me!',
   'preview.pause': '❚❚ Pause',
   'preview.play': '▶ Play',
   'preview.realSize': 'real size · 128×128',
@@ -507,6 +509,7 @@ const pt: Dict = {
   'font.system': 'Sistema — sans',
   'font.mono': 'Monoespaçada',
   'preview.title': 'Pré-visualização',
+  'preview.openMe': 'Abra-me!',
   'preview.pause': '❚❚ Pausar',
   'preview.play': '▶ Reproduzir',
   'preview.realSize': 'tamanho real · 128×128',
@@ -683,6 +686,7 @@ const ja: Dict = {
   'font.system': 'システム — sans',
   'font.mono': '等幅',
   'preview.title': 'プレビュー',
+  'preview.openMe': 'タップで開く',
   'preview.pause': '❚❚ 一時停止',
   'preview.play': '▶ 再生',
   'preview.realSize': '実寸 · 128×128',
@@ -859,6 +863,7 @@ const ko: Dict = {
   'font.system': '시스템 — sans',
   'font.mono': '고정폭',
   'preview.title': '미리보기',
+  'preview.openMe': '탭하여 열기',
   'preview.pause': '❚❚ 일시정지',
   'preview.play': '▶ 재생',
   'preview.realSize': '실제 크기 · 128×128',

@@ -17,6 +17,7 @@ export function FloatingPreview({ miniRef, onOpen, hidden }: Props) {
       onClick={onOpen}
       aria-label={t('preview.title')}
     >
+      <span className="mini-label">{t('preview.openMe')}</span>
       <canvas ref={miniRef} width={128} height={128} />
     </button>
   )

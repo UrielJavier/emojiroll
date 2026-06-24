@@ -72,7 +72,9 @@ h1{
 
 /* ---- layout ---- */
 .grid{display:grid;grid-template-columns:1fr 360px;gap:26px;align-items:start}
-.preview-col{position:sticky;top:20px;max-height:calc(100vh - 40px);overflow:auto;padding-right:2px}
+/* let columns shrink so long text scrolls inside inputs instead of widening the layout */
+.grid > div{min-width:0}
+.preview-col{position:sticky;top:20px;max-height:calc(100vh - 40px);overflow:auto;padding-right:2px;min-width:0}
 @media (max-width:860px){
   .grid{grid-template-columns:1fr}
   .preview-col{position:static;max-height:none;overflow:visible}
@@ -89,9 +91,9 @@ h1{
 label.field-label{
   display:flex;justify-content:space-between;align-items:baseline;
   font-size:12px;font-weight:500;letter-spacing:.02em;
-  color:var(--ink);margin-bottom:7px;text-transform:uppercase;
+  color:var(--ink);margin-bottom:7px;text-transform:uppercase;gap:10px;
 }
-.val{font-family:"JetBrains Mono", monospace;font-size:12px;color:var(--blue-deep);font-weight:700}
+.val{font-family:"JetBrains Mono", monospace;font-size:12px;color:var(--blue-deep);font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 input[type=text]{
   width:100%;font-family:"Space Grotesk",sans-serif;font-size:16px;font-weight:600;
@@ -504,16 +506,24 @@ input[type=color]::-webkit-color-swatch{border:1px solid var(--line);border-radi
   }
   .mini-preview{
     display:block;position:fixed;bottom:16px;right:16px;z-index:55;width:64px;height:64px;padding:0;
-    border:2px solid var(--ink);border-radius:12px;cursor:pointer;overflow:hidden;box-shadow:3px 3px 0 var(--ink);
+    border:2px solid var(--ink);border-radius:12px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);
     background-color:#f1ecdf;
     background-image:
       linear-gradient(45deg,#d8d2c4 25%,transparent 25%),linear-gradient(-45deg,#d8d2c4 25%,transparent 25%),
       linear-gradient(45deg,transparent 75%,#d8d2c4 75%),linear-gradient(-45deg,transparent 75%,#d8d2c4 75%);
     background-size:12px 12px;background-position:0 0,0 6px,6px -6px,-6px 0;
+    animation:mini-bob 1.9s ease-in-out infinite;
   }
   .mini-preview.hidden{display:none}
-  .mini-preview canvas{width:100%;height:100%;display:block}
+  .mini-preview canvas{width:100%;height:100%;display:block;border-radius:10px}
+  .mini-label{
+    position:absolute;bottom:calc(100% + 7px);right:0;white-space:nowrap;
+    background:var(--pink);color:#fff;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:11px;
+    padding:3px 9px;border:1.5px solid var(--ink);border-radius:999px;box-shadow:2px 2px 0 var(--ink);pointer-events:none;
+  }
+  @keyframes mini-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 }
+@media (prefers-reduced-motion: reduce){ .mini-preview{animation:none} }
 
 @media (prefers-reduced-motion: reduce){
   .build-btn,.dl-btn,.meter-fill{transition:none}

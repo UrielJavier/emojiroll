@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import type { DragEvent } from 'react'
 import type { TextLayer } from '../lib/types'
 
 function layerSwatch(l: TextLayer): string {
@@ -19,9 +21,34 @@ interface Props {
   onAdd: () => void
   onRemove: (id: string) => void
   onMove: (id: string, dir: -1 | 1) => void
+  /** move `id` to just before `beforeId` (null = end of list) */
+  onReorder: (id: string, beforeId: string | null) => void
 }
 
-export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMove }: Props) {
+export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMove, onReorder }: Props) {
+  const [dragId, setDragId] = useState<string | null>(null)
+  const [overId, setOverId] = useState<string | null>(null)
+
+  const clear = () => {
+    setDragId(null)
+    setOverId(null)
+  }
+
+  const onDrop = (e: DragEvent<HTMLDivElement>, targetId: string) => {
+    e.preventDefault()
+    if (!dragId || dragId === targetId) {
+      clear()
+      return
+    }
+    const rect = e.currentTarget.getBoundingClientRect()
+    const after = e.clientY - rect.top > rect.height / 2
+    const order = layers.map((l) => l.id)
+    const ti = order.indexOf(targetId)
+    const beforeId = after ? (order[ti + 1] ?? null) : targetId
+    onReorder(dragId, beforeId)
+    clear()
+  }
+
   return (
     <div className="panel">
       <div className="subhead-row">
@@ -34,9 +61,28 @@ export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMov
         {layers.map((l, i) => (
           <div
             key={l.id}
-            className={`layer-item${l.id === activeId ? ' active' : ''}`}
+            className={`layer-item${l.id === activeId ? ' active' : ''}${l.id === dragId ? ' dragging' : ''}${
+              l.id === overId && dragId && l.id !== dragId ? ' over' : ''
+            }`}
+            draggable
+            onDragStart={(e) => {
+              setDragId(l.id)
+              e.dataTransfer.effectAllowed = 'move'
+              e.dataTransfer.setData('text/plain', l.id)
+            }}
+            onDragOver={(e) => {
+              if (!dragId) return
+              e.preventDefault()
+              e.dataTransfer.dropEffect = 'move'
+              if (overId !== l.id) setOverId(l.id)
+            }}
+            onDrop={(e) => onDrop(e, l.id)}
+            onDragEnd={clear}
             onClick={() => onSelect(l.id)}
           >
+            <span className="layer-grip" aria-hidden="true" title="Arrastra para reordenar">
+              ⠿
+            </span>
             <span className="layer-swatch" style={{ background: layerSwatch(l) }} />
             <span className="layer-name">{l.text || '(vacío)'}</span>
             <button
@@ -79,7 +125,8 @@ export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMov
         ))}
       </div>
       <p className="hint" style={{ marginTop: 10 }}>
-        El orden es la profundidad: las de arriba se dibujan detrás. Cada capa tiene su velocidad y ángulo → parallax.
+        Arrastra para reordenar (o usa ↑↓). El orden es la profundidad: las de arriba se dibujan detrás. Cada capa tiene
+        su velocidad y ángulo → parallax.
       </p>
     </div>
   )

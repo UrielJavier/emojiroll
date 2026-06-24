@@ -64,6 +64,7 @@ export type Action =
   | { type: 'addLayer' }
   | { type: 'removeLayer'; id: string }
   | { type: 'moveLayer'; id: string; dir: -1 | 1 }
+  | { type: 'reorderLayer'; id: string; beforeId: string | null }
   | { type: 'setActive'; id: string }
   | { type: 'swap' }
   | { type: 'applyPreset'; preset: StylePreset }
@@ -108,6 +109,18 @@ export function reducer(state: EmojiState, action: Action): EmojiState {
       if (i < 0 || j < 0 || j >= state.layers.length) return state
       const layers = state.layers.slice()
       ;[layers[i], layers[j]] = [layers[j], layers[i]]
+      return { ...state, layers }
+    }
+
+    case 'reorderLayer': {
+      // move `id` to just before `beforeId` (or to the end when beforeId is null)
+      if (action.id === action.beforeId) return state
+      const item = state.layers.find((l) => l.id === action.id)
+      if (!item) return state
+      const without = state.layers.filter((l) => l.id !== action.id)
+      const at = action.beforeId ? without.findIndex((l) => l.id === action.beforeId) : without.length
+      const layers = without.slice()
+      layers.splice(at < 0 ? without.length : at, 0, item)
       return { ...state, layers }
     }
 

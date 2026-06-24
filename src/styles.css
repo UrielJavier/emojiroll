@@ -297,6 +297,10 @@ input[type=color]::-webkit-color-swatch{border:1px solid var(--line);border-radi
 }
 .layer-item:hover{background:var(--paper-2)}
 .layer-item.active{border-color:var(--blue);box-shadow:inset 0 0 0 1.5px var(--blue);background:#fff}
+.layer-item.dragging{opacity:.45}
+.layer-item.over{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue)}
+.layer-grip{flex:none;color:var(--ink-soft);font-size:14px;line-height:1;cursor:grab;user-select:none}
+.layer-item:active .layer-grip{cursor:grabbing}
 .layer-swatch{flex:none;width:22px;height:22px;border:1.5px solid var(--ink);border-radius:50%}
 .layer-name{flex:1;min-width:0;font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
 .layer-btn{

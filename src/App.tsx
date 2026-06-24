@@ -90,6 +90,7 @@ export default function App() {
             onAdd={() => dispatch({ type: 'addLayer' })}
             onRemove={(id) => dispatch({ type: 'removeLayer', id })}
             onMove={(id, dir) => dispatch({ type: 'moveLayer', id, dir })}
+            onReorder={(id, beforeId) => dispatch({ type: 'reorderLayer', id, beforeId })}
           />
           <TextPanel
             layer={active}

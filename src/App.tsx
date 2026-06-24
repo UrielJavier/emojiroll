@@ -72,12 +72,8 @@ export default function App() {
   return (
     <div className="wrap">
       <header>
-        <p className="eyebrow">Taller de impresión / emoji</p>
-        <h1>
-          Emoji marquesina
-          <br />
-          para Slack
-        </h1>
+        <p className="eyebrow">Emojis animados para Slack</p>
+        <h1>Emojiroll</h1>
       </header>
 
       <div className="grid">

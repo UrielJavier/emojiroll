@@ -1,4 +1,4 @@
-# Taller de emojis · Slack
+# Emojiroll
 
 Creador de emojis animados para Slack. Genera un GIF de 128×128 con texto en marquesina (scroll horizontal o fijo), tipografías, colores sólidos o degradados, sombra, contorno y comprobación de contraste y peso según el plan de Slack (128 KB gratis / 1 MB de pago).
 

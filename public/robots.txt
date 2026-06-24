@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://urieljavier.github.io/emojiroll/sitemap.xml

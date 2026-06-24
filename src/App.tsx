@@ -8,6 +8,7 @@ import { computeContrast, sanitizeName } from './lib/color'
 import { useI18n } from './i18n'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { GitHubButton } from './components/GitHubButton'
+import { AboutContent } from './components/AboutContent'
 import { LayersPanel } from './components/LayersPanel'
 import { LayerEditor } from './components/LayerEditor'
 import { PresetsPanel } from './components/PresetsPanel'
@@ -147,6 +148,8 @@ export default function App() {
           />
         </div>
       </div>
+
+      <AboutContent />
     </div>
   )
 }

@@ -204,6 +204,20 @@ const es: Dict = {
   'contrast.bgGradient': 'Fondo degradado.',
   'contrast.textGradient': 'Texto degradado (peor parada).',
   'contrast.tryStroke': 'Prueba activar el contorno.',
+  'about.h2': 'Generador de emojis animados para Slack',
+  'about.intro':
+    'Emojiroll es un generador gratuito de emojis para Slack: crea un GIF de 128×128 con texto en marquesina (scroll), parallax y diagonal, directamente en el navegador y sin instalar nada.',
+  'about.howTitle': 'Cómo crear un emoji animado para Slack',
+  'about.step1': 'Escribe tu texto, elige tipografía y colores, y añade capas para el efecto parallax.',
+  'about.step2': 'Ajusta el movimiento (izquierda, derecha o fijo), la velocidad y el ángulo diagonal.',
+  'about.step3': 'Pulsa “Crear GIF”, comprueba el peso y descárgalo para subirlo a Slack.',
+  'about.faqTitle': 'Preguntas frecuentes',
+  'about.q1': '¿Qué formato y tamaño genera?',
+  'about.a1': 'Un GIF animado de 128×128 px, el tamaño de los emojis personalizados de Slack.',
+  'about.q2': '¿Cuánto puede pesar el emoji?',
+  'about.a2': 'Slack admite hasta 128 KB (gratis) o 1 MB (de pago). El medidor de peso te avisa si te pasas.',
+  'about.q3': '¿Puedo hacer texto en movimiento o scroll?',
+  'about.a3': 'Sí: texto en marquesina, varias capas con velocidades distintas (parallax) y ángulo diagonal.',
 }
 
 const en: Dict = {
@@ -377,6 +391,20 @@ const en: Dict = {
   'contrast.bgGradient': 'Gradient background.',
   'contrast.textGradient': 'Gradient text (worst stop).',
   'contrast.tryStroke': 'Try turning on the outline.',
+  'about.h2': 'Animated Slack emoji generator',
+  'about.intro':
+    'Emojiroll is a free Slack emoji generator: make a 128×128 GIF with scrolling marquee text, parallax and diagonal, right in your browser — nothing to install.',
+  'about.howTitle': 'How to make an animated Slack emoji',
+  'about.step1': 'Type your text, pick a font and colors, and add layers for the parallax effect.',
+  'about.step2': 'Set the motion (left, right or static), the speed and the diagonal angle.',
+  'about.step3': 'Hit “Create GIF”, check the size and download it to upload to Slack.',
+  'about.faqTitle': 'FAQ',
+  'about.q1': 'What format and size does it create?',
+  'about.a1': 'An animated 128×128 px GIF — the size of Slack custom emoji.',
+  'about.q2': 'How big can the emoji be?',
+  'about.a2': 'Slack allows up to 128 KB (free) or 1 MB (paid). The size meter warns you if you go over.',
+  'about.q3': 'Can I make scrolling or moving text?',
+  'about.a3': 'Yes: marquee text, multiple layers at different speeds (parallax) and a diagonal angle.',
 }
 
 const pt: Dict = {
@@ -539,6 +567,20 @@ const pt: Dict = {
   'contrast.bgGradient': 'Fundo gradiente.',
   'contrast.textGradient': 'Texto gradiente (pior parada).',
   'contrast.tryStroke': 'Tente ativar o contorno.',
+  'about.h2': 'Gerador de emojis animados para o Slack',
+  'about.intro':
+    'O Emojiroll é um gerador gratuito de emojis para o Slack: crie um GIF 128×128 com texto em marquee (rolando), parallax e diagonal, direto no navegador e sem instalar nada.',
+  'about.howTitle': 'Como criar um emoji animado para o Slack',
+  'about.step1': 'Digite seu texto, escolha fonte e cores e adicione camadas para o efeito parallax.',
+  'about.step2': 'Ajuste o movimento (esquerda, direita ou fixo), a velocidade e o ângulo diagonal.',
+  'about.step3': 'Clique em “Criar GIF”, confira o tamanho e baixe para enviar ao Slack.',
+  'about.faqTitle': 'Perguntas frequentes',
+  'about.q1': 'Que formato e tamanho gera?',
+  'about.a1': 'Um GIF animado de 128×128 px, o tamanho dos emojis personalizados do Slack.',
+  'about.q2': 'Qual o peso máximo do emoji?',
+  'about.a2': 'O Slack aceita até 128 KB (grátis) ou 1 MB (pago). O medidor avisa se passar.',
+  'about.q3': 'Posso fazer texto em movimento ou rolando?',
+  'about.a3': 'Sim: texto em marquee, várias camadas em velocidades diferentes (parallax) e ângulo diagonal.',
 }
 
 const ja: Dict = {
@@ -701,6 +743,20 @@ const ja: Dict = {
   'contrast.bgGradient': 'グラデーション背景。',
   'contrast.textGradient': 'グラデーション文字（最悪の停止点）。',
   'contrast.tryStroke': '縁取りを有効にしてみてください。',
+  'about.h2': 'Slack用アニメ絵文字ジェネレーター',
+  'about.intro':
+    'EmojirollはSlack用の無料絵文字ジェネレーターです。流れる（マーキー）テキスト、視差、斜めに対応した128×128のGIFを、インストール不要でブラウザだけで作成できます。',
+  'about.howTitle': 'Slackのアニメ絵文字の作り方',
+  'about.step1': 'テキストを入力し、フォントと色を選び、視差効果用にレイヤーを追加します。',
+  'about.step2': '動き（左・右・固定）、速度、斜めの角度を調整します。',
+  'about.step3': '「GIFを作成」を押し、容量を確認してダウンロードし、Slackにアップロードします。',
+  'about.faqTitle': 'よくある質問',
+  'about.q1': 'どんな形式・サイズで作成しますか？',
+  'about.a1': 'Slackのカスタム絵文字と同じ、128×128 pxのアニメGIFです。',
+  'about.q2': '絵文字の容量はどれくらいまで？',
+  'about.a2': 'Slackは128 KB（無料）または1 MB（有料）まで対応。超えると容量メーターが知らせます。',
+  'about.q3': '動く・流れるテキストは作れますか？',
+  'about.a3': 'はい。マーキーテキスト、速度が異なる複数レイヤー（視差）、斜めの角度に対応しています。',
 }
 
 const ko: Dict = {
@@ -863,6 +919,20 @@ const ko: Dict = {
   'contrast.bgGradient': '그라데이션 배경.',
   'contrast.textGradient': '그라데이션 텍스트(최악의 정지점).',
   'contrast.tryStroke': '외곽선을 켜 보세요.',
+  'about.h2': 'Slack용 애니메이션 이모지 생성기',
+  'about.intro':
+    'Emojiroll은 무료 Slack 이모지 생성기입니다. 흐르는(마퀴) 텍스트, 패럴랙스, 대각선을 지원하는 128×128 GIF를 설치 없이 브라우저에서 바로 만들 수 있습니다.',
+  'about.howTitle': 'Slack 애니메이션 이모지 만드는 방법',
+  'about.step1': '텍스트를 입력하고 글꼴과 색을 고른 뒤, 패럴랙스 효과를 위해 레이어를 추가하세요.',
+  'about.step2': '움직임(왼쪽·오른쪽·고정), 속도, 대각선 각도를 조정하세요.',
+  'about.step3': '“GIF 만들기”를 누르고 용량을 확인한 뒤 다운로드하여 Slack에 업로드하세요.',
+  'about.faqTitle': '자주 묻는 질문',
+  'about.q1': '어떤 형식과 크기로 생성되나요?',
+  'about.a1': 'Slack 커스텀 이모지 크기와 같은 128×128 px 애니메이션 GIF입니다.',
+  'about.q2': '이모지 용량은 최대 얼마인가요?',
+  'about.a2': 'Slack은 128 KB(무료) 또는 1 MB(유료)까지 지원합니다. 초과하면 용량 측정기가 알려줍니다.',
+  'about.q3': '움직이거나 흐르는 텍스트를 만들 수 있나요?',
+  'about.a3': '네: 마퀴 텍스트, 서로 다른 속도의 여러 레이어(패럴랙스), 대각선 각도를 지원합니다.',
 }
 
 const DICT: Record<Lang, Dict> = { es, en, pt, ja, ko }

@@ -124,6 +124,78 @@ function glyphMetrics(ctx: Ctx, eff: EmojiState): { asc: number; desc: number; h
   return { asc, desc, h: asc + desc }
 }
 
+// Offscreen probe to measure the text's *real* painted ink. We center the body
+// band (cap height) of the text, ignoring the overshoot of accents/diacritics
+// above the caps and descenders below the baseline — so words like "Café" or
+// "logo gy" sit centered the same way an all-caps word does, instead of being
+// nudged by the reserved space those marks would otherwise claim.
+const _probe = typeof document !== 'undefined' ? document.createElement('canvas') : null
+const _pctx = _probe ? _probe.getContext('2d', { willReadFrequently: true }) : null
+let _bodyMemo: { key: string; asc: number } | null = null
+
+/** Painted-ink extent of `text`, in px above/below the alphabetic baseline (or null). */
+function scanExtent(text: string, fStr: string, sw: number, size: number): { asc: number; desc: number } | null {
+  if (!_probe || !_pctx) return null
+  _pctx.font = fStr
+  const measured = Math.ceil(_pctx.measureText(text).width)
+  const pad = 8 + sw * 2
+  const w = Math.min(4096, Math.max(16, measured) + pad * 2)
+  const h = Math.ceil(size * 2 + pad * 2 + sw * 2)
+  _probe.width = w // resizing the canvas resets the context, so re-apply state below
+  _probe.height = h
+  const baseY = Math.round(h / 2)
+  _pctx.font = fStr
+  _pctx.textBaseline = 'alphabetic'
+  if (sw) {
+    _pctx.lineJoin = 'round'
+    _pctx.miterLimit = 2
+    _pctx.lineWidth = sw * 2
+    _pctx.strokeStyle = '#fff'
+    _pctx.strokeText(text, pad, baseY)
+  }
+  _pctx.fillStyle = '#fff'
+  _pctx.fillText(text, pad, baseY)
+
+  const data = _pctx.getImageData(0, 0, w, h).data
+  let top = -1
+  let bot = -1
+  for (let y = 0; y < h; y++) {
+    const row = y * w * 4
+    for (let x = 0; x < w; x++) {
+      if (data[row + x * 4 + 3] > 8) {
+        if (top < 0) top = y
+        bot = y
+        break
+      }
+    }
+  }
+  if (top < 0) return null
+  return { asc: baseY - top, desc: bot - baseY }
+}
+
+/**
+ * Ascent (px above baseline) of the text's body band to centre on: the real ink
+ * ascent clamped to the font's cap height (drops accent overshoot). Descenders
+ * are ignored for centring. Memoized; returns null when measurement isn't possible.
+ */
+function bodyAscent(eff: EmojiState): number | null {
+  if (!_probe || !_pctx) return null
+  const fStr = fontString(eff)
+  const ready = typeof document !== 'undefined' && document.fonts ? document.fonts.check(fStr) : true
+  const sw = eff.stroke && eff.strokeWidth > 0 ? eff.strokeWidth : 0
+  const text = eff.text && eff.text.length ? eff.text : ' '
+  const key = `${text}|${fStr}|${sw}|${ready}`
+  if (_bodyMemo && _bodyMemo.key === key) return _bodyMemo.asc
+
+  const full = scanExtent(text, fStr, sw, eff.size)
+  if (!full) return null
+  const cap = scanExtent('H', fStr, sw, eff.size)
+  const capAsc = cap ? cap.asc : full.asc
+  const asc = Math.min(full.asc, capAsc)
+  _bodyMemo = { key, asc }
+  return asc
+}
+
 /**
  * Draws one full scene at the given scroll offset (px) and returns its measurements.
  * `forEncode` ignores the hover preview font (encoding always uses the committed font).
@@ -160,8 +232,10 @@ export function drawScene(ctx: Ctx, s: EmojiState, offset: number, forEncode: bo
     m = measure(ctx, eff)
   }
 
-  // baseline that centres the real glyph block in the canvas
-  const y = Math.round(64 + (met.asc - met.desc) / 2)
+  // baseline that centres the text's body band (cap height) in the canvas, ignoring
+  // accent/descender overshoot. Falls back to font metrics if measurement fails.
+  const ba = bodyAscent(eff)
+  const y = ba != null ? Math.round(64 + ba / 2) : Math.round(64 + (met.asc - met.desc) / 2)
   if (s.mode === 'static') {
     const sx = Math.round((128 - m.total) / 2)
     drawWord(ctx, m, sx, y, eff, buildFill(ctx, eff, sx, y, m.total, met.asc, met.desc))

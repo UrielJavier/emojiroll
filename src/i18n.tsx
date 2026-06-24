@@ -372,17 +372,41 @@ const en: Dict = {
 
 const DICT: Record<Lang, Dict> = { es, en }
 
+/** The language is defined by the URL: /<base>/en/ → en, everything else → es. */
 export function detectLang(): Lang {
+  if (typeof window !== 'undefined') {
+    const path = window.location.pathname.replace(/\/+$/, '')
+    if (path.endsWith('/en')) return 'en'
+  }
+  return 'es'
+}
+
+/**
+ * On the Spanish root, send a first-time English browser (or someone who chose
+ * English before) to /en/. Guarded so it runs at most once per session and never
+ * fights an explicit Spanish choice. Call before rendering.
+ */
+export function maybeRedirectToLang(): void {
+  if (typeof window === 'undefined') return
+  const base = import.meta.env.BASE_URL // e.g. "/emojiroll/"
+  const path = window.location.pathname.replace(/\/+$/, '')
+  if (path !== base.replace(/\/+$/, '')) return // only on the ES root
+  let saved: string | null = null
   try {
-    const saved = localStorage.getItem(LANG_KEY)
-    if (saved === 'es' || saved === 'en') return saved
+    saved = localStorage.getItem(LANG_KEY)
   } catch {
     /* ignore */
   }
-  if (typeof navigator !== 'undefined' && navigator.language) {
-    return navigator.language.toLowerCase().startsWith('en') ? 'en' : 'es'
+  if (saved === 'es') return
+  const navEn = typeof navigator !== 'undefined' && !!navigator.language?.toLowerCase().startsWith('en')
+  if (saved !== 'en' && !navEn) return
+  try {
+    if (sessionStorage.getItem('emojirollLangRedirected')) return
+    sessionStorage.setItem('emojirollLangRedirected', '1')
+  } catch {
+    /* ignore */
   }
-  return 'es'
+  window.location.replace(base + 'en/')
 }
 
 export type TFn = (key: string) => string

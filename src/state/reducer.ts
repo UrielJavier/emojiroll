@@ -1,6 +1,6 @@
 import { PLAN } from '../lib/constants'
 import { sanitizeName } from '../lib/color'
-import { Fill, Mode } from '../lib/types'
+import { Effect, Fill, Mode } from '../lib/types'
 import type { EmojiState, StylePreset, TextLayer } from '../lib/types'
 
 let _seq = 0
@@ -22,6 +22,7 @@ export function makeLayer(overrides: Partial<TextLayer> = {}): TextLayer {
     gap: 48,
     angle: 0,
     offsetY: 0,
+    effect: Effect.None,
     fillType: Fill.Solid,
     fg: '#ffffff',
     gradAngle: 90,

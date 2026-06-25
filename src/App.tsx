@@ -136,7 +136,6 @@ export default function App() {
             onApply={onApplyPreset}
             onDelete={presets.deletePreset}
             onImport={presets.importPresets}
-            buildShareUrl={() => `${window.location.origin}${window.location.pathname}#d=${encodeShare(state)}`}
           />
         </div>
 
@@ -159,6 +158,7 @@ export default function App() {
             inlineRef={inlineRef}
             ensureFont={fonts.ensureFont}
             onEmojiNameChange={onEmojiNameChange}
+            buildShareUrl={() => `${window.location.origin}${window.location.pathname}#d=${encodeShare(state)}`}
           />
         </div>
       </div>

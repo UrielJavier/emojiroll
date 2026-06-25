@@ -4,8 +4,10 @@ import { SMOOTH_OPTIONS } from '../lib/constants'
 import { framesFor } from '../lib/encode'
 import { anyMoving } from '../lib/draw'
 import { useI18n } from '../i18n'
-import { Mode } from '../lib/types'
+import { Effect, Mode } from '../lib/types'
 import type { EmojiState, TextLayer } from '../lib/types'
+
+const EFFECTS = Object.values(Effect)
 
 interface Props {
   layer: TextLayer
@@ -61,6 +63,19 @@ export function MotionPanel({ layer, setLayer, state, setGlobal }: Props) {
         disabled={isStatic}
         onChange={(v) => setLayer({ gap: v })}
       />
+
+      <div className="group">
+        <label className="field-label" htmlFor="effect">
+          {t('effect.label')}
+        </label>
+        <select id="effect" value={layer.effect} onChange={(e) => setLayer({ effect: e.target.value as Effect })}>
+          {EFFECTS.map((fx) => (
+            <option key={fx} value={fx}>
+              {t(`effect.${fx}`)}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <div className="subsection">
         <span className="subhead">{t('motion.global')}</span>

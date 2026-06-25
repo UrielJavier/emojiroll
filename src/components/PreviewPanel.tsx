@@ -18,6 +18,7 @@ interface Props {
   inlineRef: RefObject<HTMLCanvasElement | null>
   ensureFont: (s: EmojiState) => Promise<unknown>
   onEmojiNameChange: (value: string) => void
+  buildShareUrl: () => string
 }
 
 export function PreviewPanel({
@@ -30,12 +31,24 @@ export function PreviewPanel({
   inlineRef,
   ensureFont,
   onEmojiNameChange,
+  buildShareUrl,
 }: Props) {
   const { t } = useI18n()
   const [dark, setDark] = useState(false)
   const [result, setResult] = useState<GifResult | null>(null)
   const [building, setBuilding] = useState(false)
   const [err, setErr] = useState<string | null>(null)
+  const [shareMsg, setShareMsg] = useState<string | null>(null)
+
+  const shareDesign = async () => {
+    const url = buildShareUrl()
+    try {
+      await navigator.clipboard.writeText(url)
+      setShareMsg(t('presets.linkCopied'))
+    } catch {
+      setShareMsg(url) // clipboard blocked — show the URL so it can be copied manually
+    }
+  }
 
   const demoText = t('preview.demo')
   const idx = demoText.indexOf('{emoji}')
@@ -163,6 +176,11 @@ export function PreviewPanel({
         {building ? t('preview.building') : t('preview.build')}
       </button>
       {err && <div className="err">{err}</div>}
+
+      <button type="button" className="share-btn" onClick={shareDesign}>
+        {t('presets.share')}
+      </button>
+      <p className="hint">{shareMsg ?? t('presets.shareHint')}</p>
 
       {result && (
         <div className="result show">

@@ -22,6 +22,10 @@ export type FillType = Fill
 export const Plan = { Free: 'free', Paid: 'paid' } as const
 export type Plan = (typeof Plan)[keyof typeof Plan]
 
+/** Per-layer animated effect (periodic over the master loop, so the GIF stays seamless). */
+export const Effect = { None: 'none', Blink: 'blink', Bob: 'bob', Pulse: 'pulse', Rainbow: 'rainbow' } as const
+export type Effect = (typeof Effect)[keyof typeof Effect]
+
 export interface GradStop {
   color: string
   pos: number
@@ -45,6 +49,8 @@ export interface TextLayer {
   angle: number
   /** vertical offset from the canvas centre, in px */
   offsetY: number
+  /** animated effect applied on top of the motion */
+  effect: Effect
   // fill
   fillType: FillType
   fg: string

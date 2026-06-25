@@ -1,5 +1,5 @@
 import { FONTS } from './constants'
-import { Fill, Mode } from './types'
+import { Effect, Fill, Mode } from './types'
 import type { EmojiState, TextLayer } from './types'
 
 type Ctx = CanvasRenderingContext2D
@@ -211,20 +211,31 @@ function drawLayer(ctx: Ctx, layer: TextLayer, state: EmojiState, phaseLoops: nu
 
   const ba = bodyAscent(eff)
   const center = 64 + eff.offsetY
-  const y = Math.round(center + (ba != null ? ba : met.asc - met.desc) / 2)
+  let y = Math.round(center + (ba != null ? ba : met.asc - met.desc) / 2)
+
+  // per-layer effect, driven by the loop phase (integer cycles per loop → seamless)
+  const wave = Math.sin(phaseLoops * Math.PI * 4) // two cycles per loop
+  if (eff.effect === Effect.Blink && Math.floor(phaseLoops * 6) % 2 === 1) return
+  if (eff.effect === Effect.Bob) y += Math.round(wave * 6)
+  const pulse = eff.effect === Effect.Pulse ? 1 + wave * 0.12 : 1
+  const fill =
+    eff.effect === Effect.Rainbow
+      ? `hsl(${Math.round((((phaseLoops * 360) % 360) + 360) % 360)}, 85%, 56%)`
+      : null
 
   const rad = ((eff.angle || 0) * Math.PI) / 180
-  const rotated = rad !== 0
-  if (rotated) {
+  const transformed = rad !== 0 || pulse !== 1
+  if (transformed) {
     ctx.save()
     ctx.translate(64, 64)
     ctx.rotate(rad)
+    ctx.scale(pulse, pulse)
     ctx.translate(-64, -64)
   }
 
   if (eff.mode === Mode.Static) {
     const sx = Math.round((128 - m.total) / 2)
-    drawWord(ctx, m, sx, y, eff, buildFill(ctx, eff, sx, y, m.total, met.asc, met.desc))
+    drawWord(ctx, m, sx, y, eff, fill ?? buildFill(ctx, eff, sx, y, m.total, met.asc, met.desc))
   } else {
     const cycle = m.total + eff.gap
     const dir = eff.mode === Mode.Right ? -1 : 1
@@ -232,17 +243,17 @@ function drawLayer(ctx: Ctx, layer: TextLayer, state: EmojiState, phaseLoops: nu
     const off = ((offPx % cycle) + cycle) % cycle
     const base = 128 - off
     // rotation needs the row to reach the canvas diagonal (~181px), so tile wider
-    const xMin = rotated ? -110 : -cycle
-    const xMax = rotated ? 238 : 128 + cycle
+    const xMin = rad !== 0 ? -110 : -cycle
+    const xMax = rad !== 0 ? 238 : 128 + cycle
     const k0 = Math.floor((xMin - base) / cycle)
     const k1 = Math.ceil((xMax - base) / cycle)
     for (let k = k0; k <= k1; k++) {
       const x = base + k * cycle
-      drawWord(ctx, m, x, y, eff, buildFill(ctx, eff, x, y, m.total, met.asc, met.desc))
+      drawWord(ctx, m, x, y, eff, fill ?? buildFill(ctx, eff, x, y, m.total, met.asc, met.desc))
     }
   }
 
-  if (rotated) ctx.restore()
+  if (transformed) ctx.restore()
 }
 
 /**
@@ -264,7 +275,7 @@ export function drawScene(ctx: Ctx, state: EmojiState, phaseLoops: number, forEn
   }
 }
 
-/** True if any layer scrolls (the preview/encoder only needs frames when something moves). */
+/** True if anything animates (a layer scrolls or has an effect) → the GIF needs frames. */
 export function anyMoving(state: EmojiState): boolean {
-  return state.layers.some((l) => l.mode !== Mode.Static)
+  return state.layers.some((l) => l.mode !== Mode.Static || l.effect !== Effect.None)
 }

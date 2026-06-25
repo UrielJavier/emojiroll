@@ -31,6 +31,7 @@ const es: Dict = {
 
   // tabs
   'tabs.text': 'Texto',
+  'tabs.position': 'Posición',
   'tabs.motion': 'Movimiento',
   'tabs.color': 'Color',
   'tabs.general': 'General',
@@ -248,6 +249,7 @@ const en: Dict = {
   'lang.label': 'Language',
 
   'tabs.text': 'Text',
+  'tabs.position': 'Position',
   'tabs.motion': 'Motion',
   'tabs.color': 'Color',
   'tabs.general': 'General',
@@ -453,6 +455,7 @@ const pt: Dict = {
   'app.resetConfirm': 'Começar uma nova composição? O design atual será perdido. Seus presets salvos são mantidos.',
   'lang.label': 'Idioma',
   'tabs.text': 'Texto',
+  'tabs.position': 'Posição',
   'tabs.motion': 'Movimento',
   'tabs.color': 'Cor',
   'tabs.general': 'Geral',
@@ -648,6 +651,7 @@ const ja: Dict = {
   'app.resetConfirm': '新しい構成を始めますか？現在のデザインは失われます。保存したプリセットは保持されます。',
   'lang.label': '言語',
   'tabs.text': 'テキスト',
+  'tabs.position': '位置',
   'tabs.motion': '動き',
   'tabs.color': '色',
   'tabs.general': '全般',
@@ -843,6 +847,7 @@ const ko: Dict = {
   'app.resetConfirm': '새 구성을 시작할까요? 현재 디자인은 사라집니다. 저장된 프리셋은 유지됩니다.',
   'lang.label': '언어',
   'tabs.text': '텍스트',
+  'tabs.position': '위치',
   'tabs.motion': '움직임',
   'tabs.color': '색상',
   'tabs.general': '일반',

@@ -113,31 +113,13 @@ export function TextPanel({
         value={layer.track}
         onChange={(v) => setLayer({ track: v })}
       />
-      <RangeField
-        id="angle"
-        label={t('text.angle')}
-        valueText={`${layer.angle}°`}
-        min={-45}
-        max={45}
-        step={5}
-        value={layer.angle}
-        onChange={(v) => setLayer({ angle: v })}
-      />
-      <RangeField
-        id="offsetY"
-        label={t('text.offsetY')}
-        valueText={`${layer.offsetY > 0 ? '+' : ''}${layer.offsetY} px`}
-        min={-48}
-        max={48}
-        value={layer.offsetY}
-        onChange={(v) => setLayer({ offsetY: v })}
-        hint={t('text.offsetYHint')}
-      >
-        <label className="chk" style={{ marginTop: 6 }}>
+
+      <div className="group">
+        <label className="chk">
           <input type="checkbox" checked={layer.bold} onChange={(e) => setLayer({ bold: e.target.checked })} />{' '}
           {t('text.bold')}
         </label>
-      </RangeField>
+      </div>
     </>
   )
 }

@@ -4,6 +4,7 @@ import { PositionPanel } from './PositionPanel'
 import { MotionPanel } from './MotionPanel'
 import { ColorsPanel } from './ColorsPanel'
 import { useI18n } from '../i18n'
+import { LayerKind } from '../lib/types'
 import type { ContrastResult } from '../lib/color'
 import type { FontKey, TextLayer } from '../lib/types'
 
@@ -29,16 +30,20 @@ interface Props {
 export function LayerEditor(props: Props) {
   const { t } = useI18n()
   const [tab, setTab] = useState<Tab>('texto')
+  // images don't use the text-fill controls, so the Color tab is hidden for them
+  const isImage = props.layer.kind === LayerKind.Image
+  const tabs = isImage ? TABS.filter((tb) => tb.id !== 'color') : TABS
+  const activeTab = tabs.some((tb) => tb.id === tab) ? tab : 'texto'
   return (
     <>
       <div className="tabs" role="tablist" aria-label={t('editor.aria')}>
-        {TABS.map((tabDef) => (
+        {tabs.map((tabDef) => (
           <button
             key={tabDef.id}
             type="button"
             role="tab"
-            aria-selected={tab === tabDef.id}
-            className={tab === tabDef.id ? 'active' : undefined}
+            aria-selected={activeTab === tabDef.id}
+            className={activeTab === tabDef.id ? 'active' : undefined}
             onClick={() => setTab(tabDef.id)}
           >
             {t(tabDef.key)}
@@ -46,7 +51,7 @@ export function LayerEditor(props: Props) {
         ))}
       </div>
       <div className="tab-body">
-        {tab === 'texto' && (
+        {activeTab === 'texto' && (
           <TextPanel
             layer={props.layer}
             setLayer={props.setLayer}
@@ -56,9 +61,9 @@ export function LayerEditor(props: Props) {
             ensureAllFonts={props.ensureAllFonts}
           />
         )}
-        {tab === 'posicion' && <PositionPanel layer={props.layer} setLayer={props.setLayer} />}
-        {tab === 'movimiento' && <MotionPanel layer={props.layer} setLayer={props.setLayer} />}
-        {tab === 'color' && <ColorsPanel layer={props.layer} setLayer={props.setLayer} contrast={props.contrast} />}
+        {activeTab === 'posicion' && <PositionPanel layer={props.layer} setLayer={props.setLayer} />}
+        {activeTab === 'movimiento' && <MotionPanel layer={props.layer} setLayer={props.setLayer} />}
+        {activeTab === 'color' && <ColorsPanel layer={props.layer} setLayer={props.setLayer} contrast={props.contrast} />}
       </div>
     </>
   )

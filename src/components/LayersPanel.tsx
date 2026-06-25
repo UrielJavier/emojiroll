@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import type { DragEvent } from 'react'
 import { useI18n } from '../i18n'
-import { Fill } from '../lib/types'
+import { Fill, LayerKind } from '../lib/types'
 import type { TextLayer } from '../lib/types'
 
 function layerSwatch(l: TextLayer): string {
+  if (l.kind === LayerKind.Image) {
+    return l.image ? `center / cover no-repeat url(${l.image})` : '#e6e0d2'
+  }
   if (l.fillType === Fill.Gradient && l.gradStops.length >= 2) {
     return (
       'linear-gradient(135deg,' +
@@ -80,7 +83,9 @@ export function LayersPanel({ layers, activeId, onSelect, onRemove, onMove, onRe
               ⠿
             </span>
             <span className="layer-swatch" style={{ background: layerSwatch(l) }} />
-            <span className="layer-name">{l.text || t('layers.empty')}</span>
+            <span className="layer-name">
+              {l.kind === LayerKind.Image ? t('text.image') : l.text || t('layers.empty')}
+            </span>
             <button
               type="button"
               className="layer-btn"

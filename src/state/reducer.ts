@@ -1,6 +1,6 @@
 import { PLAN } from '../lib/constants'
 import { sanitizeName } from '../lib/color'
-import { Effect, Fill, Mode } from '../lib/types'
+import { Effect, Fill, LayerKind, Mode } from '../lib/types'
 import type { EmojiState, StylePreset, TextLayer } from '../lib/types'
 
 let _seq = 0
@@ -12,6 +12,7 @@ function newId(): string {
 
 export function makeLayer(overrides: Partial<TextLayer> = {}): TextLayer {
   return {
+    kind: LayerKind.Text,
     text: 'IMAGINEERING',
     font: 'archivo',
     size: 58,

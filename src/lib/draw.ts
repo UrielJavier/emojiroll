@@ -1,5 +1,5 @@
 import { FONTS } from './constants'
-import { Effect, Fill, Mode } from './types'
+import { Effect, Fill, LayerKind, Mode } from './types'
 import type { EmojiState, TextLayer } from './types'
 
 type Ctx = CanvasRenderingContext2D
@@ -257,7 +257,8 @@ function drawLayer(ctx: Ctx, layer: TextLayer, state: EmojiState, phaseLoops: nu
   let total: number
   let paintTile: (x: number) => void
 
-  if (eff.image) {
+  if (eff.kind === LayerKind.Image) {
+    if (!eff.image) return
     const img = getImage(eff.image)
     if (!imgReady(img)) return
     let h = Math.min(eff.size, maxH)

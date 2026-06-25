@@ -26,6 +26,10 @@ export type Plan = (typeof Plan)[keyof typeof Plan]
 export const Effect = { None: 'none', Blink: 'blink', Bob: 'bob', Pulse: 'pulse', Rainbow: 'rainbow' } as const
 export type Effect = (typeof Effect)[keyof typeof Effect]
 
+/** What a layer renders: a text message OR an image — never both at once. */
+export const LayerKind = { Text: 'text', Image: 'image' } as const
+export type LayerKind = (typeof LayerKind)[keyof typeof LayerKind]
+
 export interface GradStop {
   color: string
   pos: number
@@ -34,8 +38,10 @@ export interface GradStop {
 /** One independent line of text. Multiple layers stack to make parallax/diagonal scenes. */
 export interface TextLayer {
   id: string
+  /** whether this layer shows its text or its image — the two inputs are mutually exclusive */
+  kind: LayerKind
   text: string
-  /** if set, the layer renders this image (data URL) instead of its text */
+  /** the uploaded image (data URL), shown when kind === Image */
   image?: string
   font: FontKey
   size: number

@@ -2,7 +2,7 @@ import { initialState, makeLayer } from './reducer'
 import { STATE_STORE_KEY } from '../lib/constants'
 import { detectLang, translate } from '../i18n'
 import { sanitizeName } from '../lib/color'
-import { Fill } from '../lib/types'
+import { Fill, LayerKind } from '../lib/types'
 import type { EmojiState, TextLayer } from '../lib/types'
 
 /** A fresh composition with the default layer text localized to the current URL's language. */
@@ -20,6 +20,8 @@ function hydrate(parsed: Record<string, unknown>): EmojiState {
       ? layersRaw.map((l) => {
           const merged = { ...makeLayer(), ...l } as TextLayer
           if (l.id) merged.id = l.id
+          // older layers predate `kind`: infer it from whether an image was set
+          if (!l.kind) merged.kind = l.image ? LayerKind.Image : LayerKind.Text
           return merged
         })
       : initialState.layers

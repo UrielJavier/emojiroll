@@ -9,8 +9,6 @@ interface Props {
   setLayer: (patch: Partial<TextLayer>) => void
   onTextChange: (value: string) => void
   onPreviewFont: (font: FontKey | null) => void
-  showGuide: boolean
-  onShowGuide: (value: boolean) => void
   ensureFontKey: (font: FontKey) => void
   ensureAllFonts: () => void
 }
@@ -20,8 +18,6 @@ export function TextPanel({
   setLayer,
   onTextChange,
   onPreviewFont,
-  showGuide,
-  onShowGuide,
   ensureFontKey,
   ensureAllFonts,
 }: Props) {
@@ -140,10 +136,6 @@ export function TextPanel({
         <label className="chk" style={{ marginTop: 6 }}>
           <input type="checkbox" checked={layer.bold} onChange={(e) => setLayer({ bold: e.target.checked })} />{' '}
           {t('text.bold')}
-        </label>
-        <label className="chk" style={{ marginTop: 6 }}>
-          <input type="checkbox" checked={showGuide} onChange={(e) => onShowGuide(e.target.checked)} />{' '}
-          {t('text.guide')}
         </label>
       </RangeField>
     </>

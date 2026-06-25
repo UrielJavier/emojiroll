@@ -10,7 +10,7 @@ import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { GitHubButton } from './components/GitHubButton'
 import { AboutContent } from './components/AboutContent'
 import { FloatingPreview } from './components/FloatingPreview'
-import { TemplatesPanel } from './components/TemplatesPanel'
+import { GeneralPanel } from './components/GeneralPanel'
 import { LayersPanel } from './components/LayersPanel'
 import { LayerEditor } from './components/LayerEditor'
 import { PresetsPanel } from './components/PresetsPanel'
@@ -105,7 +105,14 @@ export default function App() {
 
       <div className="grid">
         <div>
-          <TemplatesPanel onApply={onApplyPreset} />
+          <GeneralPanel
+            state={state}
+            setGlobal={setGlobal}
+            setLayer={setLayer}
+            onSwap={() => dispatch({ type: 'swap' })}
+            showGuide={showGuide}
+            onShowGuide={setShowGuide}
+          />
           <LayersPanel
             layers={state.layers}
             activeId={state.activeLayerId}
@@ -118,15 +125,10 @@ export default function App() {
           <LayerEditor
             layer={active}
             setLayer={setLayer}
-            state={state}
-            setGlobal={setGlobal}
             onTextChange={onTextChange}
             onPreviewFont={(f) => setGlobal({ previewFont: f })}
-            showGuide={showGuide}
-            onShowGuide={setShowGuide}
             ensureFontKey={fonts.ensureFontKey}
             ensureAllFonts={() => fonts.ensureAllFonts(active.size)}
-            onSwap={() => dispatch({ type: 'swap' })}
             contrast={contrast}
           />
           <PresetsPanel

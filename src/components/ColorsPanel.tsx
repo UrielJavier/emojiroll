@@ -4,90 +4,32 @@ import { GradientEditor } from './GradientEditor'
 import { ContrastMeter } from './ContrastMeter'
 import { RangeField } from './RangeField'
 import { DirPad } from './DirPad'
-import { SWATCHES } from '../lib/constants'
-import { contrastFor } from '../lib/color'
 import { useI18n } from '../i18n'
 import { Fill } from '../lib/types'
 import type { ContrastResult } from '../lib/color'
-import type { BgType, EmojiState, FillType, TextLayer } from '../lib/types'
+import type { FillType, TextLayer } from '../lib/types'
 
 interface Props {
   layer: TextLayer
   setLayer: (patch: Partial<TextLayer>) => void
-  state: EmojiState
-  setGlobal: (patch: Partial<EmojiState>) => void
-  onSwap: () => void
   contrast: ContrastResult
 }
 
-export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contrast }: Props) {
+export function ColorsPanel({ layer, setLayer, contrast }: Props) {
   const { t } = useI18n()
-  const typeOptions = [
+  const fillOptions: { value: FillType; label: string }[] = [
     { value: Fill.Solid, label: t('color.type.solid') },
     { value: Fill.Gradient, label: t('color.type.gradient') },
     { value: Fill.Transparent, label: t('color.type.transparent') },
   ]
 
-  const onSwatch = (hex: string) => {
-    setGlobal({ bg: hex, bgType: Fill.Solid, transparent: false })
-    setLayer({ fg: contrastFor(hex) })
-  }
-
   return (
     <>
-      {/* FONDO (global) */}
-      <div className="subsection">
-        <div className="subhead-row">
-          <span className="subhead">{t('color.bg')}</span>
-          <button className="swap-corner" title={t('color.swapTitle')} aria-label={t('color.swapTitle')} onClick={onSwap}>
-            ⇅
-          </button>
-        </div>
-        <Segmented
-          options={typeOptions as { value: BgType; label: string }[]}
-          value={state.bgType}
-          onChange={(v) => setGlobal({ bgType: v, transparent: v === Fill.Transparent })}
-          ariaLabel={t('color.bgTypeAria')}
-        />
-        {state.bgType === Fill.Solid && (
-          <div style={{ marginTop: 12 }}>
-            <div className="solid-row">
-              <ColorField id="bg" label={t('color.color')} value={state.bg} onChange={(v) => setGlobal({ bg: v })} />
-            </div>
-            <div className="swatches" aria-label={t('color.quickBg')}>
-              {SWATCHES.map((hex) => (
-                <button
-                  key={hex}
-                  type="button"
-                  className="swatch"
-                  style={{ background: hex }}
-                  title={hex}
-                  aria-label={`${t('color.bg')} ${hex}`}
-                  onClick={() => onSwatch(hex)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-        {state.bgType === Fill.Gradient && (
-          <div style={{ marginTop: 12 }}>
-            <GradientEditor
-              stops={state.bgGradStops}
-              onStopsChange={(s) => setGlobal({ bgGradStops: s })}
-              angle={state.bgGradAngle}
-              onAngleChange={(a) => setGlobal({ bgGradAngle: a })}
-              dirLabel={t('color.bgGradDirAria')}
-            />
-          </div>
-        )}
-        {state.bgType === Fill.Transparent && <p className="hint">{t('color.bgTransparentHint')}</p>}
-      </div>
-
-      {/* TEXTO (capa activa) */}
+      {/* TEXT FILL (active layer) */}
       <div className="subsection">
         <span className="subhead">{t('color.layerText')}</span>
         <Segmented
-          options={typeOptions as { value: FillType; label: string }[]}
+          options={fillOptions}
           value={layer.fillType}
           onChange={(v) => setLayer({ fillType: v })}
           ariaLabel={t('color.fillTypeAria')}
@@ -113,7 +55,7 @@ export function ColorsPanel({ layer, setLayer, state, setGlobal, onSwap, contras
         {layer.fillType === Fill.Transparent && <p className="hint">{t('color.textTransparentHint')}</p>}
       </div>
 
-      {/* ESTILOS (capa activa) */}
+      {/* STYLES (active layer) */}
       <div className="subsection">
         <span className="subhead">{t('color.styles')}</span>
         <div className="toggle-row">

@@ -4,7 +4,7 @@ import { MotionPanel } from './MotionPanel'
 import { ColorsPanel } from './ColorsPanel'
 import { useI18n } from '../i18n'
 import type { ContrastResult } from '../lib/color'
-import type { EmojiState, FontKey, TextLayer } from '../lib/types'
+import type { FontKey, TextLayer } from '../lib/types'
 
 type Tab = 'texto' | 'movimiento' | 'color'
 const TABS: { id: Tab; key: string }[] = [
@@ -16,19 +16,14 @@ const TABS: { id: Tab; key: string }[] = [
 interface Props {
   layer: TextLayer
   setLayer: (patch: Partial<TextLayer>) => void
-  state: EmojiState
-  setGlobal: (patch: Partial<EmojiState>) => void
   onTextChange: (value: string) => void
   onPreviewFont: (font: FontKey | null) => void
-  showGuide: boolean
-  onShowGuide: (value: boolean) => void
   ensureFontKey: (font: FontKey) => void
   ensureAllFonts: () => void
-  onSwap: () => void
   contrast: ContrastResult
 }
 
-/** A single card that edits the active layer, with Texto / Movimiento / Color tabs. */
+/** Card that edits the active layer: Texto / Movimiento / Color tabs. */
 export function LayerEditor(props: Props) {
   const { t } = useI18n()
   const [tab, setTab] = useState<Tab>('texto')
@@ -55,25 +50,12 @@ export function LayerEditor(props: Props) {
             setLayer={props.setLayer}
             onTextChange={props.onTextChange}
             onPreviewFont={props.onPreviewFont}
-            showGuide={props.showGuide}
-            onShowGuide={props.onShowGuide}
             ensureFontKey={props.ensureFontKey}
             ensureAllFonts={props.ensureAllFonts}
           />
         )}
-        {tab === 'movimiento' && (
-          <MotionPanel layer={props.layer} setLayer={props.setLayer} state={props.state} setGlobal={props.setGlobal} />
-        )}
-        {tab === 'color' && (
-          <ColorsPanel
-            layer={props.layer}
-            setLayer={props.setLayer}
-            state={props.state}
-            setGlobal={props.setGlobal}
-            onSwap={props.onSwap}
-            contrast={props.contrast}
-          />
-        )}
+        {tab === 'movimiento' && <MotionPanel layer={props.layer} setLayer={props.setLayer} />}
+        {tab === 'color' && <ColorsPanel layer={props.layer} setLayer={props.setLayer} contrast={props.contrast} />}
       </div>
     </div>
   )

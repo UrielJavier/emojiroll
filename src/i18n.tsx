@@ -33,6 +33,7 @@ const es: Dict = {
   'tabs.text': 'Texto',
   'tabs.motion': 'Movimiento',
   'tabs.color': 'Color',
+  'tabs.general': 'General',
   'editor.aria': 'Editar capa activa',
 
   // layers
@@ -247,6 +248,7 @@ const en: Dict = {
   'tabs.text': 'Text',
   'tabs.motion': 'Motion',
   'tabs.color': 'Color',
+  'tabs.general': 'General',
   'editor.aria': 'Edit active layer',
 
   'layers.title': 'Layers',
@@ -449,6 +451,7 @@ const pt: Dict = {
   'tabs.text': 'Texto',
   'tabs.motion': 'Movimento',
   'tabs.color': 'Cor',
+  'tabs.general': 'Geral',
   'editor.aria': 'Editar camada ativa',
   'layers.title': 'Camadas',
   'layers.add': '+ Camada',
@@ -641,6 +644,7 @@ const ja: Dict = {
   'tabs.text': 'テキスト',
   'tabs.motion': '動き',
   'tabs.color': '色',
+  'tabs.general': '全般',
   'editor.aria': 'アクティブなレイヤーを編集',
   'layers.title': 'レイヤー',
   'layers.add': '+ レイヤー',
@@ -833,6 +837,7 @@ const ko: Dict = {
   'tabs.text': '텍스트',
   'tabs.motion': '움직임',
   'tabs.color': '색상',
+  'tabs.general': '일반',
   'editor.aria': '활성 레이어 편집',
   'layers.title': '레이어',
   'layers.add': '+ 레이어',

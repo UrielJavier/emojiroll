@@ -1,10 +1,23 @@
 import { useRef, useState } from 'react'
 import type { ChangeEvent, KeyboardEvent } from 'react'
 import { useI18n } from '../i18n'
+import { TEMPLATES } from '../lib/templates'
 import { Fill } from '../lib/types'
 import type { StylePreset } from '../lib/types'
 
 type PresetMap = Record<string, StylePreset>
+
+function bgSwatch(p: StylePreset): string {
+  if (p.bgType === Fill.Gradient && p.bgGradStops.length >= 2) {
+    return (
+      'linear-gradient(135deg,' +
+      [...p.bgGradStops].sort((a, b) => a.pos - b.pos).map((s) => `${s.color} ${Math.round(s.pos * 100)}%`).join(',') +
+      ')'
+    )
+  }
+  if (p.bgType === Fill.Transparent) return 'repeating-conic-gradient(#d8d2c4 0% 25%, #f1ecdf 0% 50%) 50% / 10px 10px'
+  return p.bg
+}
 
 function presetSwatchCss(p: StylePreset): string {
   if (p.bgType === Fill.Gradient && p.bgGradStops && p.bgGradStops.length >= 2) {
@@ -77,9 +90,22 @@ export function PresetsPanel({ presets, canPersist, onSave, onApply, onDelete, o
   return (
     <div className="panel">
       <div className="subhead" style={{ marginBottom: 12 }}>
-        {t('presets.title')}
+        {t('templates.title')}
       </div>
-      <div className="preset-save">
+      <div className="tpl-grid">
+        {TEMPLATES.map((tp) => (
+          <button key={tp.name} type="button" className="tpl-chip" onClick={() => onApply(tp.preset)}>
+            <span className="tpl-swatch" style={{ background: bgSwatch(tp.preset) }} />
+            {tp.name}
+          </button>
+        ))}
+      </div>
+
+      <div className="subsection">
+        <div className="subhead" style={{ marginBottom: 12 }}>
+          {t('presets.title')}
+        </div>
+        <div className="preset-save">
         <input
           type="text"
           id="presetName"
@@ -136,11 +162,12 @@ export function PresetsPanel({ presets, canPersist, onSave, onApply, onDelete, o
         </button>
         <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={onFile} />
       </div>
-      {ioMsg && (
-        <p className="hint" style={{ marginTop: 8 }}>
-          {ioMsg}
-        </p>
-      )}
+        {ioMsg && (
+          <p className="hint" style={{ marginTop: 8 }}>
+            {ioMsg}
+          </p>
+        )}
+      </div>
     </div>
   )
 }

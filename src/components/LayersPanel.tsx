@@ -20,14 +20,13 @@ interface Props {
   layers: TextLayer[]
   activeId: string
   onSelect: (id: string) => void
-  onAdd: () => void
   onRemove: (id: string) => void
   onMove: (id: string, dir: -1 | 1) => void
   /** move `id` to just before `beforeId` (null = end of list) */
   onReorder: (id: string, beforeId: string | null) => void
 }
 
-export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMove, onReorder }: Props) {
+export function LayersPanel({ layers, activeId, onSelect, onRemove, onMove, onReorder }: Props) {
   const { t } = useI18n()
   const [dragId, setDragId] = useState<string | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
@@ -53,13 +52,7 @@ export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMov
   }
 
   return (
-    <div className="panel">
-      <div className="subhead-row">
-        <span className="subhead">{t('layers.title')}</span>
-        <button type="button" className="layer-add" onClick={onAdd} title={t('layers.add')}>
-          {t('layers.add')}
-        </button>
-      </div>
+    <>
       <div className="layer-list">
         {layers.map((l, i) => (
           <div
@@ -130,6 +123,6 @@ export function LayersPanel({ layers, activeId, onSelect, onAdd, onRemove, onMov
       <p className="hint" style={{ marginTop: 10 }}>
         {t('layers.hint')}
       </p>
-    </div>
+    </>
   )
 }

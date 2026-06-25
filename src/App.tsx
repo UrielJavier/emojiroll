@@ -10,6 +10,7 @@ import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { GitHubButton } from './components/GitHubButton'
 import { AboutContent } from './components/AboutContent'
 import { FloatingPreview } from './components/FloatingPreview'
+import { Accordion } from './components/Accordion'
 import { GeneralPanel } from './components/GeneralPanel'
 import { LayersPanel } from './components/LayersPanel'
 import { LayerEditor } from './components/LayerEditor'
@@ -105,40 +106,59 @@ export default function App() {
 
       <div className="grid">
         <div>
-          <GeneralPanel
-            state={state}
-            setGlobal={setGlobal}
-            setLayer={setLayer}
-            onSwap={() => dispatch({ type: 'swap' })}
-            showGuide={showGuide}
-            onShowGuide={setShowGuide}
-          />
-          <LayersPanel
-            layers={state.layers}
-            activeId={state.activeLayerId}
-            onSelect={(id) => dispatch({ type: 'setActive', id })}
-            onAdd={() => dispatch({ type: 'addLayer', text: t('layer.new') })}
-            onRemove={(id) => dispatch({ type: 'removeLayer', id })}
-            onMove={(id, dir) => dispatch({ type: 'moveLayer', id, dir })}
-            onReorder={(id, beforeId) => dispatch({ type: 'reorderLayer', id, beforeId })}
-          />
-          <LayerEditor
-            layer={active}
-            setLayer={setLayer}
-            onTextChange={onTextChange}
-            onPreviewFont={(f) => setGlobal({ previewFont: f })}
-            ensureFontKey={fonts.ensureFontKey}
-            ensureAllFonts={() => fonts.ensureAllFonts(active.size)}
-            contrast={contrast}
-          />
-          <PresetsPanel
-            presets={presets.presets}
-            canPersist={presets.canPersist}
-            onSave={(name) => presets.savePreset(name, captureStyle(state))}
-            onApply={onApplyPreset}
-            onDelete={presets.deletePreset}
-            onImport={presets.importPresets}
-          />
+          <Accordion title={t('tabs.general')}>
+            <GeneralPanel
+              state={state}
+              setGlobal={setGlobal}
+              setLayer={setLayer}
+              onSwap={() => dispatch({ type: 'swap' })}
+              showGuide={showGuide}
+              onShowGuide={setShowGuide}
+            />
+          </Accordion>
+          <Accordion
+            title={t('layers.title')}
+            action={
+              <button
+                type="button"
+                className="layer-add"
+                onClick={() => dispatch({ type: 'addLayer', text: t('layer.new') })}
+                title={t('layers.add')}
+              >
+                {t('layers.add')}
+              </button>
+            }
+          >
+            <LayersPanel
+              layers={state.layers}
+              activeId={state.activeLayerId}
+              onSelect={(id) => dispatch({ type: 'setActive', id })}
+              onRemove={(id) => dispatch({ type: 'removeLayer', id })}
+              onMove={(id, dir) => dispatch({ type: 'moveLayer', id, dir })}
+              onReorder={(id, beforeId) => dispatch({ type: 'reorderLayer', id, beforeId })}
+            />
+          </Accordion>
+          <Accordion title={t('editor.title')}>
+            <LayerEditor
+              layer={active}
+              setLayer={setLayer}
+              onTextChange={onTextChange}
+              onPreviewFont={(f) => setGlobal({ previewFont: f })}
+              ensureFontKey={fonts.ensureFontKey}
+              ensureAllFonts={() => fonts.ensureAllFonts(active.size)}
+              contrast={contrast}
+            />
+          </Accordion>
+          <Accordion title={t('presets.panelTitle')} defaultOpen={false}>
+            <PresetsPanel
+              presets={presets.presets}
+              canPersist={presets.canPersist}
+              onSave={(name) => presets.savePreset(name, captureStyle(state))}
+              onApply={onApplyPreset}
+              onDelete={presets.deletePreset}
+              onImport={presets.importPresets}
+            />
+          </Accordion>
         </div>
 
         <div className={`preview-col${previewOpen ? ' open' : ''}`}>

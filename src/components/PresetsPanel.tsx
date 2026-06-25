@@ -88,7 +88,7 @@ export function PresetsPanel({ presets, canPersist, onSave, onApply, onDelete, o
   }
 
   return (
-    <div className="panel">
+    <>
       <div className="subhead" style={{ marginBottom: 12 }}>
         {t('templates.title')}
       </div>
@@ -168,6 +168,6 @@ export function PresetsPanel({ presets, canPersist, onSave, onApply, onDelete, o
           </p>
         )}
       </div>
-    </div>
+    </>
   )
 }

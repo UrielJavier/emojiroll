@@ -38,7 +38,7 @@ export function GeneralPanel({ state, setGlobal, setLayer, onSwap, showGuide, on
   }
 
   return (
-    <div className="panel">
+    <>
       {/* BACKGROUND */}
       <div className="subsection">
         <div className="subhead-row">
@@ -129,6 +129,6 @@ export function GeneralPanel({ state, setGlobal, setLayer, onSwap, showGuide, on
           </label>
         </RangeField>
       </div>
-    </div>
+    </>
   )
 }

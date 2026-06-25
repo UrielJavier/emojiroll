@@ -35,6 +35,7 @@ const es: Dict = {
   'tabs.color': 'Color',
   'tabs.general': 'General',
   'editor.aria': 'Editar capa activa',
+  'editor.title': 'Capa activa',
 
   // layers
   'layers.title': 'Capas',
@@ -187,6 +188,7 @@ const es: Dict = {
   'result.download': 'Descargar GIF',
 
   // presets
+  'presets.panelTitle': 'Plantillas y presets',
   'presets.title': 'Mis presets',
   'templates.title': 'Plantillas',
   'presets.share': '↗ Compartir diseño',
@@ -250,6 +252,7 @@ const en: Dict = {
   'tabs.color': 'Color',
   'tabs.general': 'General',
   'editor.aria': 'Edit active layer',
+  'editor.title': 'Active layer',
 
   'layers.title': 'Layers',
   'layers.add': '+ Layer',
@@ -393,6 +396,7 @@ const en: Dict = {
     'It doesn’t fit this plan. Try: lower smoothness to “Compact”, shorten the text, a faster loop (fewer frames), or drop the transparent background.',
   'result.download': 'Download GIF',
 
+  'presets.panelTitle': 'Templates & presets',
   'presets.title': 'My presets',
   'templates.title': 'Templates',
   'presets.share': '↗ Share design',
@@ -453,6 +457,7 @@ const pt: Dict = {
   'tabs.color': 'Cor',
   'tabs.general': 'Geral',
   'editor.aria': 'Editar camada ativa',
+  'editor.title': 'Camada ativa',
   'layers.title': 'Camadas',
   'layers.add': '+ Camada',
   'layers.empty': '(vazio)',
@@ -587,6 +592,7 @@ const pt: Dict = {
   'result.tip':
     'Não cabe neste plano. Tente: baixar a suavidade para “Compacto”, encurtar o texto, um loop mais rápido (menos frames) ou remover o fundo transparente.',
   'result.download': 'Baixar GIF',
+  'presets.panelTitle': 'Modelos e presets',
   'presets.title': 'Meus presets',
   'templates.title': 'Modelos',
   'presets.share': '↗ Compartilhar design',
@@ -646,6 +652,7 @@ const ja: Dict = {
   'tabs.color': '色',
   'tabs.general': '全般',
   'editor.aria': 'アクティブなレイヤーを編集',
+  'editor.title': 'アクティブなレイヤー',
   'layers.title': 'レイヤー',
   'layers.add': '+ レイヤー',
   'layers.empty': '(空)',
@@ -780,6 +787,7 @@ const ja: Dict = {
   'result.tip':
     'このプランに収まりません。なめらかさを「コンパクト」に下げる、テキストを短くする、ループを速く（フレームを減らす）、または透明背景をやめる、などを試してください。',
   'result.download': 'GIFをダウンロード',
+  'presets.panelTitle': 'テンプレートとプリセット',
   'presets.title': 'マイプリセット',
   'templates.title': 'テンプレート',
   'presets.share': '↗ デザインを共有',
@@ -839,6 +847,7 @@ const ko: Dict = {
   'tabs.color': '색상',
   'tabs.general': '일반',
   'editor.aria': '활성 레이어 편집',
+  'editor.title': '활성 레이어',
   'layers.title': '레이어',
   'layers.add': '+ 레이어',
   'layers.empty': '(비어 있음)',
@@ -973,6 +982,7 @@ const ko: Dict = {
   'result.tip':
     '이 플랜에 맞지 않습니다. 부드러움을 "간결"로 낮추거나, 텍스트를 줄이거나, 루프를 더 빠르게(프레임 감소)하거나, 투명 배경을 제거해 보세요.',
   'result.download': 'GIF 다운로드',
+  'presets.panelTitle': '템플릿 및 프리셋',
   'presets.title': '내 프리셋',
   'templates.title': '템플릿',
   'presets.share': '↗ 디자인 공유',

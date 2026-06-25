@@ -28,7 +28,7 @@ export function LayerEditor(props: Props) {
   const { t } = useI18n()
   const [tab, setTab] = useState<Tab>('texto')
   return (
-    <div className="panel">
+    <>
       <div className="tabs" role="tablist" aria-label={t('editor.aria')}>
         {TABS.map((tabDef) => (
           <button
@@ -57,6 +57,6 @@ export function LayerEditor(props: Props) {
         {tab === 'movimiento' && <MotionPanel layer={props.layer} setLayer={props.setLayer} />}
         {tab === 'color' && <ColorsPanel layer={props.layer} setLayer={props.setLayer} contrast={props.contrast} />}
       </div>
-    </div>
+    </>
   )
 }

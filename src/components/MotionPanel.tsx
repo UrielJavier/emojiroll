@@ -77,6 +77,19 @@ export function MotionPanel({ layer, setLayer, state, setGlobal }: Props) {
         </select>
       </div>
 
+      {layer.effect !== Effect.None && (
+        <RangeField
+          id="effectSpeed"
+          label={t('effect.speed')}
+          valueText={`${layer.effectSpeed}×`}
+          min={1}
+          max={6}
+          step={1}
+          value={layer.effectSpeed}
+          onChange={(v) => setLayer({ effectSpeed: v })}
+        />
+      )}
+
       <div className="subsection">
         <span className="subhead">{t('motion.global')}</span>
         <RangeField

@@ -35,6 +35,8 @@ export interface GradStop {
 export interface TextLayer {
   id: string
   text: string
+  /** if set, the layer renders this image (data URL) instead of its text */
+  image?: string
   font: FontKey
   size: number
   track: number
@@ -51,6 +53,8 @@ export interface TextLayer {
   offsetY: number
   /** animated effect applied on top of the motion */
   effect: Effect
+  /** effect cycles per master loop (kept integer so the loop stays seamless) */
+  effectSpeed: number
   // fill
   fillType: FillType
   fg: string

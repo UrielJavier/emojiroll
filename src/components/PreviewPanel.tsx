@@ -3,7 +3,7 @@ import type { RefObject } from 'react'
 import { Segmented } from './Segmented'
 import { PLAN } from '../lib/constants'
 import { encodeGif } from '../lib/encode'
-import { anyMoving } from '../lib/draw'
+import { anyMoving, preloadImages } from '../lib/draw'
 import { useI18n } from '../i18n'
 import { Plan } from '../lib/types'
 import type { EmojiState, GifResult } from '../lib/types'
@@ -76,7 +76,7 @@ export function PreviewPanel({
     }
     setBuilding(true)
     try {
-      await Promise.all([ensureFont(state), document.fonts.ready])
+      await Promise.all([ensureFont(state), document.fonts.ready, preloadImages(state)])
       // brief yield so the button repaint is visible before the (sync) encode
       await new Promise((r) => setTimeout(r, 20))
       setResult(encodeGif(state))

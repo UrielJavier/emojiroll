@@ -187,7 +187,53 @@ function bodyAscent(l: TextLayer): number | null {
   return asc
 }
 
-/** Draws a single text layer with its own parallax offset and optional diagonal angle. */
+// cache of uploaded layer images by data URL
+const _imgCache = new Map<string, HTMLImageElement>()
+function getImage(src: string): HTMLImageElement | null {
+  if (typeof Image === 'undefined') return null
+  let img = _imgCache.get(src)
+  if (!img) {
+    img = new Image()
+    img.src = src
+    _imgCache.set(src, img)
+  }
+  return img
+}
+function imgReady(img: HTMLImageElement | null): img is HTMLImageElement {
+  return !!img && img.complete && img.naturalWidth > 0
+}
+
+/** Wait until every layer image is decoded (used before encoding so no frame is blank). */
+export function preloadImages(state: EmojiState): Promise<unknown> {
+  const srcs = state.layers.map((l) => l.image).filter((s): s is string => !!s)
+  return Promise.all(
+    srcs.map((src) => {
+      const img = getImage(src)
+      if (!img || (img.complete && img.naturalWidth > 0)) return Promise.resolve()
+      return new Promise<void>((res) => {
+        img.onload = () => res()
+        img.onerror = () => res()
+      })
+    }),
+  )
+}
+
+/** x positions for the layer's tiles (one centred tile when static, else the scrolling row). */
+function tileXs(layer: TextLayer, total: number, phaseLoops: number, rotated: boolean): number[] {
+  if (layer.mode === Mode.Static) return [Math.round((128 - total) / 2)]
+  const cycle = total + layer.gap
+  const dir = layer.mode === Mode.Right ? -1 : 1
+  const off = (((dir * layer.speed * cycle * phaseLoops) % cycle) + cycle) % cycle
+  const base = 128 - off
+  // rotation needs the row to reach the canvas diagonal (~181px), so tile wider
+  const xMin = rotated ? -110 : -cycle
+  const xMax = rotated ? 238 : 128 + cycle
+  const xs: number[] = []
+  for (let k = Math.floor((xMin - base) / cycle); k <= Math.ceil((xMax - base) / cycle); k++) xs.push(base + k * cycle)
+  return xs
+}
+
+/** Draws a single layer (text or image) with its parallax offset, angle and effect. */
 function drawLayer(ctx: Ctx, layer: TextLayer, state: EmojiState, phaseLoops: number, forEncode: boolean) {
   const fk = !forEncode && state.previewFont && layer.id === state.activeLayerId ? state.previewFont : layer.font
   let eff: TextLayer = fk === layer.font ? layer : { ...layer, font: fk }
@@ -196,32 +242,57 @@ function drawLayer(ctx: Ctx, layer: TextLayer, state: EmojiState, phaseLoops: nu
   const pad = state.padding || 0
   const maxH = 128 - 2 * pad
   const maxW = 128 - 2 * pad
-  const strokeExtra = eff.stroke && eff.strokeWidth > 0 ? eff.strokeWidth * 2 : 0
-  let met = glyphMetrics(ctx, eff)
-  let m = measure(ctx, eff)
-  let scale = 1
-  if (met.h + strokeExtra > maxH) scale = Math.min(scale, Math.max(0.1, maxH - strokeExtra) / met.h)
-  if (eff.mode === Mode.Static && m.total + strokeExtra > maxW)
-    scale = Math.min(scale, Math.max(0.1, maxW - strokeExtra) / m.total)
-  if (scale < 1) {
-    eff = { ...eff, size: Math.max(8, Math.floor(eff.size * scale)) }
-    met = glyphMetrics(ctx, eff)
-    m = measure(ctx, eff)
-  }
 
-  const ba = bodyAscent(eff)
-  const center = 64 + eff.offsetY
-  let y = Math.round(center + (ba != null ? ba : met.asc - met.desc) / 2)
-
-  // per-layer effect, driven by the loop phase (integer cycles per loop → seamless)
-  const wave = Math.sin(phaseLoops * Math.PI * 4) // two cycles per loop
-  if (eff.effect === Effect.Blink && Math.floor(phaseLoops * 6) % 2 === 1) return
-  if (eff.effect === Effect.Bob) y += Math.round(wave * 6)
+  // effect, driven by the loop phase (integer cycles per loop → seamless)
+  const cycles = eff.effectSpeed || 2
+  const wave = Math.sin(phaseLoops * Math.PI * 2 * cycles)
+  if (eff.effect === Effect.Blink && Math.floor(phaseLoops * 2 * cycles) % 2 === 1) return
+  let vy = 64 + eff.offsetY
+  if (eff.effect === Effect.Bob) vy += Math.round(wave * 6)
   const pulse = eff.effect === Effect.Pulse ? 1 + wave * 0.12 : 1
-  const fill =
-    eff.effect === Effect.Rainbow
-      ? `hsl(${Math.round((((phaseLoops * 360) % 360) + 360) % 360)}, 85%, 56%)`
-      : null
+  const rainbow =
+    eff.effect === Effect.Rainbow ? `hsl(${Math.round((((phaseLoops * 360 * cycles) % 360) + 360) % 360)}, 85%, 56%)` : null
+
+  // resolve what to paint (image or text) and how wide it is
+  let total: number
+  let paintTile: (x: number) => void
+
+  if (eff.image) {
+    const img = getImage(eff.image)
+    if (!imgReady(img)) return
+    let h = Math.min(eff.size, maxH)
+    let w = Math.max(1, Math.round((img.naturalWidth / img.naturalHeight) * h))
+    if (eff.mode === Mode.Static && w > maxW) {
+      const s = maxW / w
+      w = Math.round(w * s)
+      h = Math.round(h * s)
+    }
+    total = w
+    paintTile = (x) => ctx.drawImage(img, Math.round(x), Math.round(vy - h / 2), w, h)
+  } else {
+    const strokeExtra = eff.stroke && eff.strokeWidth > 0 ? eff.strokeWidth * 2 : 0
+    let met = glyphMetrics(ctx, eff)
+    let m = measure(ctx, eff)
+    let scale = 1
+    if (met.h + strokeExtra > maxH) scale = Math.min(scale, Math.max(0.1, maxH - strokeExtra) / met.h)
+    if (eff.mode === Mode.Static && m.total + strokeExtra > maxW)
+      scale = Math.min(scale, Math.max(0.1, maxW - strokeExtra) / m.total)
+    if (scale < 1) {
+      eff = { ...eff, size: Math.max(8, Math.floor(eff.size * scale)) }
+      met = glyphMetrics(ctx, eff)
+      m = measure(ctx, eff)
+    }
+    const ba = bodyAscent(eff)
+    const half = (ba != null ? ba : met.asc - met.desc) / 2
+    const m2 = m
+    const met2 = met
+    const eff2 = eff
+    total = m.total
+    paintTile = (x) => {
+      const y = Math.round(vy + half)
+      drawWord(ctx, m2, x, y, eff2, rainbow ?? buildFill(ctx, eff2, x, y, m2.total, met2.asc, met2.desc))
+    }
+  }
 
   const rad = ((eff.angle || 0) * Math.PI) / 180
   const transformed = rad !== 0 || pulse !== 1
@@ -232,27 +303,7 @@ function drawLayer(ctx: Ctx, layer: TextLayer, state: EmojiState, phaseLoops: nu
     ctx.scale(pulse, pulse)
     ctx.translate(-64, -64)
   }
-
-  if (eff.mode === Mode.Static) {
-    const sx = Math.round((128 - m.total) / 2)
-    drawWord(ctx, m, sx, y, eff, fill ?? buildFill(ctx, eff, sx, y, m.total, met.asc, met.desc))
-  } else {
-    const cycle = m.total + eff.gap
-    const dir = eff.mode === Mode.Right ? -1 : 1
-    const offPx = dir * eff.speed * cycle * phaseLoops
-    const off = ((offPx % cycle) + cycle) % cycle
-    const base = 128 - off
-    // rotation needs the row to reach the canvas diagonal (~181px), so tile wider
-    const xMin = rad !== 0 ? -110 : -cycle
-    const xMax = rad !== 0 ? 238 : 128 + cycle
-    const k0 = Math.floor((xMin - base) / cycle)
-    const k1 = Math.ceil((xMax - base) / cycle)
-    for (let k = k0; k <= k1; k++) {
-      const x = base + k * cycle
-      drawWord(ctx, m, x, y, eff, fill ?? buildFill(ctx, eff, x, y, m.total, met.asc, met.desc))
-    }
-  }
-
+  for (const x of tileXs(eff, total, phaseLoops, rad !== 0)) paintTile(x)
   if (transformed) ctx.restore()
 }
 

@@ -1,3 +1,4 @@
+import type { ChangeEvent } from 'react'
 import { FontCombo } from './FontCombo'
 import { RangeField } from './RangeField'
 import { useI18n } from '../i18n'
@@ -25,6 +26,33 @@ export function TextPanel({
   ensureAllFonts,
 }: Props) {
   const { t } = useI18n()
+
+  // read an uploaded image, downscale to <=256px to keep the data URL small, store on the layer
+  const onUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const img = new Image()
+      img.onload = () => {
+        const max = 256
+        const s = Math.min(1, max / Math.max(img.width, img.height))
+        const w = Math.max(1, Math.round(img.width * s))
+        const h = Math.max(1, Math.round(img.height * s))
+        const c = document.createElement('canvas')
+        c.width = w
+        c.height = h
+        const cx = c.getContext('2d')
+        if (!cx) return
+        cx.drawImage(img, 0, 0, w, h)
+        setLayer({ image: c.toDataURL('image/png') })
+      }
+      img.src = reader.result as string
+    }
+    reader.readAsDataURL(file)
+  }
+
   return (
     <>
       <div className="group">
@@ -40,6 +68,22 @@ export function TextPanel({
           onChange={(e) => onTextChange(e.target.value)}
         />
         <p className="hint">{t('text.shortHint')}</p>
+      </div>
+
+      <div className="group">
+        <label className="field-label">{t('text.image')}</label>
+        <div className="img-row">
+          <label className="img-btn">
+            {t('text.uploadImage')}
+            <input type="file" accept="image/*" hidden onChange={onUpload} />
+          </label>
+          {layer.image && (
+            <button type="button" className="img-btn" onClick={() => setLayer({ image: undefined })}>
+              {t('text.removeImage')}
+            </button>
+          )}
+        </div>
+        <p className="hint">{t('text.imageHint')}</p>
       </div>
 
       <div className="group">

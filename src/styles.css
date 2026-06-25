@@ -293,6 +293,15 @@ input[type=color]::-webkit-color-swatch{border:1px solid var(--line);border-radi
 .tpl-chip:hover{border-color:var(--blue);background:#fff}
 .tpl-chip:focus-visible{outline:2.5px solid var(--blue);outline-offset:2px}
 .tpl-swatch{flex:none;width:20px;height:20px;border:1.5px solid var(--ink);border-radius:50%}
+
+/* ---- image-layer upload ---- */
+.img-row{display:flex;gap:8px;flex-wrap:wrap}
+.img-btn{
+  display:inline-flex;align-items:center;gap:6px;border:1.5px dashed var(--line);background:transparent;color:var(--ink-soft);
+  border-radius:var(--radius);font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:12px;padding:8px 12px;cursor:pointer;
+}
+.img-btn:hover{border-color:var(--blue);color:var(--blue)}
+.img-btn:focus-within,.img-btn:focus-visible{outline:2.5px solid var(--blue);outline-offset:2px}
 .preset-apply:focus-visible,.preset-del:focus-visible,.preset-name:focus-visible{outline:2.5px solid var(--blue);outline-offset:2px}
 
 .contrast{margin-top:18px;border-top:1.5px solid var(--line);padding-top:14px}

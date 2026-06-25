@@ -23,6 +23,7 @@ export function makeLayer(overrides: Partial<TextLayer> = {}): TextLayer {
     angle: 0,
     offsetY: 0,
     effect: Effect.None,
+    effectSpeed: 2,
     fillType: Fill.Solid,
     fg: '#ffffff',
     gradAngle: 90,

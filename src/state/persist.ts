@@ -77,6 +77,8 @@ export function saveState(state: EmojiState): void {
 /** A shareable URL hash payload (base64 of the composition, minus device-specific bits). */
 export function encodeShare(state: EmojiState): string {
   const { previewFont: _p, planLimit: _l, ...rest } = state
-  const json = JSON.stringify(rest)
+  // drop uploaded images — their data URLs would make the link enormous
+  const layers = rest.layers.map(({ image: _img, ...l }) => l)
+  const json = JSON.stringify({ ...rest, layers })
   return encodeURIComponent(btoa(unescape(encodeURIComponent(json))))
 }

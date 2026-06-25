@@ -176,6 +176,9 @@ const es: Dict = {
 
   // presets
   'presets.title': 'Mis presets',
+  'templates.title': 'Plantillas',
+  'presets.share': '↗ Compartir enlace',
+  'presets.linkCopied': '¡Enlace copiado!',
   'presets.namePlaceholder': 'Nombre del estilo',
   'presets.save': 'Guardar estilo',
   'presets.persistYes': 'Se guardan en este navegador y siguen disponibles al recargar.',
@@ -366,6 +369,9 @@ const en: Dict = {
   'result.download': 'Download GIF',
 
   'presets.title': 'My presets',
+  'templates.title': 'Templates',
+  'presets.share': '↗ Share link',
+  'presets.linkCopied': 'Link copied!',
   'presets.namePlaceholder': 'Style name',
   'presets.save': 'Save style',
   'presets.persistYes': 'Saved in this browser and kept after reloading.',
@@ -544,6 +550,9 @@ const pt: Dict = {
     'Não cabe neste plano. Tente: baixar a suavidade para “Compacto”, encurtar o texto, um loop mais rápido (menos frames) ou remover o fundo transparente.',
   'result.download': 'Baixar GIF',
   'presets.title': 'Meus presets',
+  'templates.title': 'Modelos',
+  'presets.share': '↗ Compartilhar link',
+  'presets.linkCopied': 'Link copiado!',
   'presets.namePlaceholder': 'Nome do estilo',
   'presets.save': 'Salvar estilo',
   'presets.persistYes': 'Salvos neste navegador e mantidos ao recarregar.',
@@ -721,6 +730,9 @@ const ja: Dict = {
     'このプランに収まりません。なめらかさを「コンパクト」に下げる、テキストを短くする、ループを速く（フレームを減らす）、または透明背景をやめる、などを試してください。',
   'result.download': 'GIFをダウンロード',
   'presets.title': 'マイプリセット',
+  'templates.title': 'テンプレート',
+  'presets.share': '↗ リンクを共有',
+  'presets.linkCopied': 'リンクをコピーしました',
   'presets.namePlaceholder': 'スタイル名',
   'presets.save': 'スタイルを保存',
   'presets.persistYes': 'このブラウザに保存され、再読み込み後も残ります。',
@@ -898,6 +910,9 @@ const ko: Dict = {
     '이 플랜에 맞지 않습니다. 부드러움을 "간결"로 낮추거나, 텍스트를 줄이거나, 루프를 더 빠르게(프레임 감소)하거나, 투명 배경을 제거해 보세요.',
   'result.download': 'GIF 다운로드',
   'presets.title': '내 프리셋',
+  'templates.title': '템플릿',
+  'presets.share': '↗ 링크 공유',
+  'presets.linkCopied': '링크를 복사했어요',
   'presets.namePlaceholder': '스타일 이름',
   'presets.save': '스타일 저장',
   'presets.persistYes': '이 브라우저에 저장되어 새로고침해도 유지됩니다.',
@@ -987,7 +1002,7 @@ export function maybeRedirectToLang(): void {
   } catch {
     /* ignore */
   }
-  window.location.replace(base + target + '/')
+  window.location.replace(base + target + '/' + window.location.hash)
 }
 
 export type TFn = (key: string) => string

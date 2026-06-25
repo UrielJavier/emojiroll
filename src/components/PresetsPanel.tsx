@@ -28,9 +28,10 @@ interface Props {
   onApply: (preset: StylePreset) => void
   onDelete: (name: string) => void
   onImport: (presets: PresetMap) => void
+  buildShareUrl: () => string
 }
 
-export function PresetsPanel({ presets, canPersist, onSave, onApply, onDelete, onImport }: Props) {
+export function PresetsPanel({ presets, canPersist, onSave, onApply, onDelete, onImport, buildShareUrl }: Props) {
   const { t } = useI18n()
   const [name, setName] = useState('')
   const [ioMsg, setIoMsg] = useState<string | null>(null)
@@ -42,6 +43,16 @@ export function PresetsPanel({ presets, canPersist, onSave, onApply, onDelete, o
     if (!n) return
     onSave(n)
     setName('')
+  }
+
+  const shareLink = async () => {
+    const url = buildShareUrl()
+    try {
+      await navigator.clipboard.writeText(url)
+      setIoMsg(t('presets.linkCopied'))
+    } catch {
+      setIoMsg(url) // clipboard blocked — show the URL so it can be copied manually
+    }
   }
 
   const exportPresets = () => {
@@ -136,6 +147,9 @@ export function PresetsPanel({ presets, canPersist, onSave, onApply, onDelete, o
         </button>
         <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={onFile} />
       </div>
+      <button type="button" className="preset-io-btn share" onClick={shareLink}>
+        {t('presets.share')}
+      </button>
       {ioMsg && (
         <p className="hint" style={{ marginTop: 8 }}>
           {ioMsg}

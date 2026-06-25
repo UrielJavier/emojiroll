@@ -282,6 +282,18 @@ input[type=color]::-webkit-color-swatch{border:1px solid var(--line);border-radi
 .preset-io-btn:hover:not(:disabled){border-color:var(--blue);color:var(--blue)}
 .preset-io-btn:disabled{opacity:.4;cursor:not-allowed}
 .preset-io-btn:focus-visible{outline:2.5px solid var(--blue);outline-offset:2px}
+.preset-io-btn.share{width:100%;margin-top:8px}
+
+/* ---- templates ---- */
+.tpl-grid{display:flex;flex-wrap:wrap;gap:8px}
+.tpl-chip{
+  display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:var(--paper);
+  border-radius:999px;padding:6px 12px 6px 8px;cursor:pointer;color:var(--ink);
+  font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13px;
+}
+.tpl-chip:hover{border-color:var(--blue);background:#fff}
+.tpl-chip:focus-visible{outline:2.5px solid var(--blue);outline-offset:2px}
+.tpl-swatch{flex:none;width:20px;height:20px;border:1.5px solid var(--ink);border-radius:50%}
 .preset-apply:focus-visible,.preset-del:focus-visible,.preset-name:focus-visible{outline:2.5px solid var(--blue);outline-offset:2px}
 
 .contrast{margin-top:18px;border-top:1.5px solid var(--line);padding-top:14px}

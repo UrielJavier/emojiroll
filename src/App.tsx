@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useRef, useState } from 'react'
 import { reducer, initialState, captureStyle, getActiveLayer } from './state/reducer'
-import { loadState, saveState } from './state/persist'
+import { loadState, saveState, encodeShare } from './state/persist'
 import { useAnimationLoop } from './hooks/useAnimationLoop'
 import { useFonts } from './hooks/useFonts'
 import { usePresets } from './hooks/usePresets'
@@ -10,6 +10,7 @@ import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { GitHubButton } from './components/GitHubButton'
 import { AboutContent } from './components/AboutContent'
 import { FloatingPreview } from './components/FloatingPreview'
+import { TemplatesPanel } from './components/TemplatesPanel'
 import { LayersPanel } from './components/LayersPanel'
 import { LayerEditor } from './components/LayerEditor'
 import { PresetsPanel } from './components/PresetsPanel'
@@ -104,6 +105,7 @@ export default function App() {
 
       <div className="grid">
         <div>
+          <TemplatesPanel onApply={onApplyPreset} />
           <LayersPanel
             layers={state.layers}
             activeId={state.activeLayerId}
@@ -134,6 +136,7 @@ export default function App() {
             onApply={onApplyPreset}
             onDelete={presets.deletePreset}
             onImport={presets.importPresets}
+            buildShareUrl={() => `${window.location.origin}${window.location.pathname}#d=${encodeShare(state)}`}
           />
         </div>
 

@@ -138,6 +138,12 @@ select{
 .combo-list li[aria-selected=true]{box-shadow:inset 0 0 0 1.5px var(--blue)}
 .combo-list li.active,.combo-list li:hover{background:var(--blue);color:#fff}
 @media (prefers-reduced-motion: reduce){.combo-caret{transition:none}}
+/* generic Select (reuses .combo): normal-sized items, optional compact width */
+.combo.select .combo-list li{font-size:14px;font-weight:600;font-family:"Space Grotesk",sans-serif;line-height:1.2}
+.combo-btn:disabled{opacity:.4;cursor:not-allowed}
+.combo.compact{width:auto;display:inline-block}
+.combo.compact .combo-btn{width:auto}
+.combo.compact .combo-list{left:auto;right:0;min-width:130px}
 
 input[type=range]{
   width:100%;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer;height:22px;

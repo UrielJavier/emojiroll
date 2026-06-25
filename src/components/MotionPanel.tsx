@@ -1,4 +1,5 @@
 import { Segmented } from './Segmented'
+import { Select } from './Select'
 import { RangeField } from './RangeField'
 import { useI18n } from '../i18n'
 import { Effect, Mode } from '../lib/types'
@@ -58,16 +59,13 @@ export function MotionPanel({ layer, setLayer }: Props) {
       />
 
       <div className="group">
-        <label className="field-label" htmlFor="effect">
-          {t('effect.label')}
-        </label>
-        <select id="effect" value={layer.effect} onChange={(e) => setLayer({ effect: e.target.value as Effect })}>
-          {EFFECTS.map((fx) => (
-            <option key={fx} value={fx}>
-              {t(`effect.${fx}`)}
-            </option>
-          ))}
-        </select>
+        <label className="field-label">{t('effect.label')}</label>
+        <Select
+          value={layer.effect}
+          options={EFFECTS.map((fx) => ({ value: fx, label: t(`effect.${fx}`) }))}
+          onChange={(v) => setLayer({ effect: v })}
+          ariaLabel={t('effect.label')}
+        />
       </div>
 
       {layer.effect !== Effect.None && (

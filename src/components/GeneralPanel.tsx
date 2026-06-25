@@ -1,4 +1,5 @@
 import { Segmented } from './Segmented'
+import { Select } from './Select'
 import { ColorField } from './ColorField'
 import { GradientEditor } from './GradientEditor'
 import { RangeField } from './RangeField'
@@ -102,16 +103,16 @@ export function GeneralPanel({ state, setGlobal, setLayer, onSwap, showGuide, on
           hint={framesHint}
         />
         <div className="group">
-          <label className="field-label" htmlFor="smooth">
+          <label className="field-label">
             {t('motion.smooth')} <span className="val">{t(`smooth.label.${state.fps}`)}</span>
           </label>
-          <select id="smooth" value={state.fps} disabled={!moving} onChange={(e) => setGlobal({ fps: +e.target.value })}>
-            {SMOOTH_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {t(`smooth.opt.${o.value}`)}
-              </option>
-            ))}
-          </select>
+          <Select
+            value={state.fps}
+            options={SMOOTH_OPTIONS.map((o) => ({ value: o.value, label: t(`smooth.opt.${o.value}`) }))}
+            onChange={(v) => setGlobal({ fps: v })}
+            ariaLabel={t('motion.smooth')}
+            disabled={!moving}
+          />
         </div>
         <RangeField
           id="pad"

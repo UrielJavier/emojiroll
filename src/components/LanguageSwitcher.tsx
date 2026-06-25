@@ -1,3 +1,4 @@
+import { Select } from './Select'
 import { useI18n } from '../i18n'
 import type { Lang } from '../i18n'
 
@@ -12,17 +13,12 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <select
-      className="lang-select"
+    <Select
       value={lang}
-      aria-label={t('lang.label')}
-      onChange={(e) => go(e.target.value as Lang)}
-    >
-      {langs.map((l) => (
-        <option key={l.code} value={l.code}>
-          {l.label}
-        </option>
-      ))}
-    </select>
+      options={langs.map((l) => ({ value: l.code, label: l.label }))}
+      onChange={go}
+      ariaLabel={t('lang.label')}
+      compact
+    />
   )
 }

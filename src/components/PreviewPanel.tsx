@@ -115,6 +115,7 @@ export function PreviewPanel({
 
       <Accordion
         minimal
+        defaultOpen={false}
         title={t('preview.inMessage')}
         action={
           <div className="theme-seg" role="group" aria-label={t('preview.themeAria')}>
@@ -147,11 +148,8 @@ export function PreviewPanel({
         </div>
       </Accordion>
 
-      <Accordion minimal title={t('preview.options')}>
-        <div className="group">
-          <label className="field-label" htmlFor="emojiName">
-            {t('preview.name')} <span className="val">{emojiCode}</span>
-          </label>
+      <Accordion minimal defaultOpen={false} title={t('preview.name')} action={<span className="val">{emojiCode}</span>}>
+        <div className="group" style={{ marginBottom: 0 }}>
           <div className="name-row">
             <input
               type="text"
@@ -165,11 +163,15 @@ export function PreviewPanel({
           </div>
           <p className="hint">{t('preview.nameHint')}</p>
         </div>
+      </Accordion>
 
-        <div className="group" style={{ marginTop: 18, marginBottom: 0 }}>
-          <label className="field-label">
-            {t('preview.plan')} <span className="val">{`${t('preview.max')} ${isPaid ? '1 MB' : '128 KB'}`}</span>
-          </label>
+      <Accordion
+        minimal
+        defaultOpen={false}
+        title={t('preview.plan')}
+        action={<span className="val">{`${t('preview.max')} ${isPaid ? '1 MB' : '128 KB'}`}</span>}
+      >
+        <div className="group" style={{ marginBottom: 0 }}>
           <Segmented
             options={planOptions}
             value={isPaid ? Plan.Paid : Plan.Free}

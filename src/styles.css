@@ -102,6 +102,13 @@ h1{
 .accordion .acc-body{margin-top:16px}
 .accordion .acc-toggle:focus-visible{outline:2.5px solid var(--blue);outline-offset:3px;border-radius:4px}
 
+/* minimal variant: no box, just a thin divider — for sections nested inside a panel */
+.accordion.minimal{border:0;background:none;padding:0}
+.accordion.minimal .acc-head{padding:13px 0;border-top:1.5px solid var(--line)}
+.accordion.minimal .acc-title{font-size:11px;color:var(--ink-soft)}
+.accordion.minimal .acc-caret{color:var(--ink-soft)}
+.accordion.minimal .acc-body{margin-top:12px;padding-bottom:4px}
+
 .group{margin-bottom:18px}
 .group:last-child{margin-bottom:0}
 label.field-label{

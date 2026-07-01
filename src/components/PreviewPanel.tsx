@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { RefObject } from 'react'
+import { Accordion } from './Accordion'
 import { Segmented } from './Segmented'
 import { PLAN } from '../lib/constants'
 import { encodeGif } from '../lib/encode'
@@ -112,9 +113,10 @@ export function PreviewPanel({
       </div>
       <p className="scale-note">{t('preview.realSize')}</p>
 
-      <div className={`slack-mock${dark ? ' dark' : ''}`}>
-        <div className="mlabel-row">
-          <span className="mlabel">{t('preview.inMessage')}</span>
+      <Accordion
+        minimal
+        title={t('preview.inMessage')}
+        action={
           <div className="theme-seg" role="group" aria-label={t('preview.themeAria')}>
             <button type="button" aria-pressed={!dark} onClick={() => setDark(false)}>
               {t('preview.light')}
@@ -123,56 +125,61 @@ export function PreviewPanel({
               {t('preview.dark')}
             </button>
           </div>
-        </div>
-        <div className="msg">
-          <div className="avatar">U</div>
-          <div className="mbody">
-            <div>
-              <span className="mname">{t('preview.you')}</span>
-              <span className="mtime">10:24</span>
-            </div>
-            <div className="mtext">
-              {before}
-              <span className="emoji-inline">
-                <canvas ref={inlineRef} width={128} height={128} />
-              </span>
-              {after}
+        }
+      >
+        <div className={`slack-mock${dark ? ' dark' : ''}`}>
+          <div className="msg">
+            <div className="avatar">U</div>
+            <div className="mbody">
+              <div>
+                <span className="mname">{t('preview.you')}</span>
+                <span className="mtime">10:24</span>
+              </div>
+              <div className="mtext">
+                {before}
+                <span className="emoji-inline">
+                  <canvas ref={inlineRef} width={128} height={128} />
+                </span>
+                {after}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </Accordion>
 
-      <div className="group" style={{ marginTop: 18 }}>
-        <label className="field-label" htmlFor="emojiName">
-          {t('preview.name')} <span className="val">{emojiCode}</span>
-        </label>
-        <div className="name-row">
-          <input
-            type="text"
-            id="emojiName"
-            placeholder={t('preview.namePlaceholder')}
-            autoComplete="off"
-            spellCheck={false}
-            value={state.emojiName}
-            onChange={(e) => onEmojiNameChange(e.target.value)}
+      <Accordion minimal title={t('preview.options')}>
+        <div className="group">
+          <label className="field-label" htmlFor="emojiName">
+            {t('preview.name')} <span className="val">{emojiCode}</span>
+          </label>
+          <div className="name-row">
+            <input
+              type="text"
+              id="emojiName"
+              placeholder={t('preview.namePlaceholder')}
+              autoComplete="off"
+              spellCheck={false}
+              value={state.emojiName}
+              onChange={(e) => onEmojiNameChange(e.target.value)}
+            />
+          </div>
+          <p className="hint">{t('preview.nameHint')}</p>
+        </div>
+
+        <div className="group" style={{ marginTop: 18, marginBottom: 0 }}>
+          <label className="field-label">
+            {t('preview.plan')} <span className="val">{`${t('preview.max')} ${isPaid ? '1 MB' : '128 KB'}`}</span>
+          </label>
+          <Segmented
+            options={planOptions}
+            value={isPaid ? Plan.Paid : Plan.Free}
+            onChange={(p) => set({ planLimit: PLAN[p] })}
+            ariaLabel={t('preview.planAria')}
           />
         </div>
-        <p className="hint">{t('preview.nameHint')}</p>
-      </div>
+      </Accordion>
 
-      <div className="group" style={{ marginTop: 18 }}>
-        <label className="field-label">
-          {t('preview.plan')} <span className="val">{`${t('preview.max')} ${isPaid ? '1 MB' : '128 KB'}`}</span>
-        </label>
-        <Segmented
-          options={planOptions}
-          value={isPaid ? Plan.Paid : Plan.Free}
-          onChange={(p) => set({ planLimit: PLAN[p] })}
-          ariaLabel={t('preview.planAria')}
-        />
-      </div>
-
-      <button className="build-btn" onClick={onBuild} disabled={building}>
+      <button className="build-btn" onClick={onBuild} disabled={building} style={{ marginTop: 18 }}>
         {building ? t('preview.building') : t('preview.build')}
       </button>
       {err && <div className="err">{err}</div>}
